@@ -1,0 +1,233 @@
+/* Estilos del Panel Administrativo de SERVICIOSWEB */
+
+.pin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(6, 9, 19, 0.95);
+  backdrop-filter: blur(25px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.pin-modal-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem;
+  text-align: center;
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 229, 255, 0.15);
+}
+
+.pin-header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.pin-header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.8rem;
+}
+
+.pin-input {
+  text-align: center;
+  font-size: 1.8rem;
+  letter-spacing: 0.4em;
+  padding: 0.8rem;
+  font-weight: 700;
+}
+
+.pin-error-text {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 0.8rem;
+  font-weight: 600;
+}
+
+/* Topbar */
+.admin-topbar {
+  background: rgba(12, 18, 34, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(15px);
+}
+
+.admin-topbar-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.neon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: var(--neon-cyan);
+}
+
+.admin-main {
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+}
+
+/* Métricas */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.admin-stat-box {
+  padding: 1.5rem;
+}
+
+.stat-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.stat-title {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: 900;
+  font-family: var(--font-heading);
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* Tabla */
+.admin-table-card {
+  padding: 1.8rem;
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.admin-table th {
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.nuevo {
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.status-badge.contactado {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-badge.cerrado {
+  background: rgba(37, 211, 102, 0.15);
+  color: var(--whatsapp-green);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.btn-table-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(37, 211, 102, 0.15);
+  color: var(--whatsapp-green);
+  border: 1px solid rgba(37, 211, 102, 0.3);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.78rem;
+  transition: var(--transition);
+}
+
+.btn-table-wa:hover {
+  background: var(--whatsapp-green);
+  color: #060913;
+}
+
+@media (max-width: 1024px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  #admin-config-form {
+    grid-template-columns: 1fr !important;
+  }
+}

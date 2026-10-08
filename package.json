@@ -1,0 +1,28 @@
+{
+  "name": "serviciosweb-agencia",
+  "version": "1.0.0",
+  "description": "Plataforma de Captación de Clientes: Páginas Web, Catálogos Digitales Interactivos y Manejo de Redes Sociales con Integración a WhatsApp y Neon PostgreSQL",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@neondatabase/serverless": "^0.10.4",
+    "pg": "^8.13.1"
+  },
+  "keywords": [
+    "paginas-web",
+    "catalogos-digitales",
+    "redes-sociales",
+    "whatsapp",
+    "marketing-digital",
+    "neon",
+    "postgres",
+    "cloudflare-r2",
+    "vercel"
+  ],
+  "author": "SERVICIOSWEB",
+  "license": "MIT"
+}

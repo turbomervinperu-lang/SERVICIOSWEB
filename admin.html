@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrativo | SERVICIOSWEB</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2300e5ff'/><text x='50' y='65' font-size='50' font-weight='900' text-anchor='middle' fill='%23060913'>SW</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Pantalla de Bloqueo por PIN -->
+  <div id="pin-lock-modal" class="pin-modal-overlay">
+    <div class="glass-card pin-modal-card">
+      <div class="pin-header">
+        <div class="brand-icon" style="margin: 0 auto 1rem auto;">SW</div>
+        <h2>Acceso Administrativo</h2>
+        <p>Ingresa el PIN de seguridad para gestionar los clientes y servicios.</p>
+      </div>
+      <form id="pin-form">
+        <div class="form-group">
+          <input type="password" id="admin-pin-input" class="form-input pin-input" maxlength="10" placeholder="••••" required autofocus autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+          <span>Ingresar al Panel</span>
+          &rarr;
+        </button>
+        <div id="pin-error-msg" class="pin-error-text" style="display:none;">PIN incorrecto. Inténtalo nuevamente.</div>
+      </form>
+      <div style="margin-top:1.5rem; text-align:center;">
+        <a href="index.html" class="nav-link" style="font-size:0.85rem;">&larr; Volver a la página principal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Principal -->
+  <div id="admin-dashboard" style="display:none;">
+    
+    <!-- Topbar Admin -->
+    <header class="admin-topbar">
+      <div class="container admin-topbar-flex">
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <a href="index.html" class="brand-logo">
+            <div class="brand-icon">SW</div>
+            <span class="brand-text">SERVICIOS<span class="gradient-cyan">WEB</span></span>
+          </a>
+          <span class="brand-badge" style="background:rgba(37,211,102,0.15); color:var(--whatsapp-green); border-color:rgba(37,211,102,0.3);">
+            PANEL DE CONTROL
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; gap:1.2rem;">
+          <span id="neon-badge-status" class="neon-badge online">
+            <span class="hero-pill-dot" style="width:6px; height:6px;"></span>
+            Neon PostgreSQL Conectado
+          </span>
+          <button id="btn-logout" class="btn btn-outline btn-sm">Cerrar Sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container admin-main">
+      
+      <!-- Métricas y Estadísticas Rápidas -->
+      <section class="admin-stats-grid">
+        <div class="glass-card admin-stat-box">
+          <div class="stat-meta">
+            <span class="stat-title">Total Solicitudes</span>
+            <span class="stat-icon cyan">📊</span>
+          </div>
+          <div class="stat-number" id="stat-total-leads">0</div>
+          <div class="stat-sub">Prospectos captados en la web</div>
+        </div>
+
+        <div class="glass-card admin-stat-box">
+          <div class="stat-meta">
+            <span class="stat-title">Páginas Web</span>
+            <span class="stat-icon blue">🌐</span>
+          </div>
+          <div class="stat-number" id="stat-web-leads">0</div>
+          <div class="stat-sub">Interesados en sitios & landing</div>
+        </div>
+
+        <div class="glass-card admin-stat-box">
+          <div class="stat-meta">
+            <span class="stat-title">Catálogos Digitales</span>
+            <span class="stat-icon green">🛒</span>
+          </div>
+          <div class="stat-number" id="stat-catalogo-leads">0</div>
+          <div class="stat-sub">Interesados en catálogos WhatsApp</div>
+        </div>
+
+        <div class="glass-card admin-stat-box">
+          <div class="stat-meta">
+            <span class="stat-title">Redes Sociales</span>
+            <span class="stat-icon purple">📱</span>
+          </div>
+          <div class="stat-number" id="stat-redes-leads">0</div>
+          <div class="stat-sub">Interesados en gestión y contenido</div>
+        </div>
+      </section>
+
+      <!-- Tabla de Prospectos / Clientes Captados -->
+      <section class="glass-card admin-table-card">
+        <div class="admin-card-header">
+          <div>
+            <h2 style="font-size:1.4rem;">Clientes y Solicitudes de Cotización</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted);">
+              Sincronizado en tiempo real con Neon PostgreSQL (<code id="db-name-label">SERVICIOSWEB</code>)
+            </p>
+          </div>
+          <div style="display:flex; gap:0.8rem;">
+            <select id="filter-lead-status" class="form-select" style="width:auto; padding:0.4rem 1rem; font-size:0.85rem;">
+              <option value="">Todos los Estados</option>
+              <option value="nuevo">Nuevos</option>
+              <option value="contactado">Contactados</option>
+              <option value="cerrado">Cerrados / Clientes</option>
+            </select>
+            <button id="btn-refresh-leads" class="btn btn-outline btn-sm">
+              🔄 Actualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente / Negocio</th>
+                <th>Servicio Requerido</th>
+                <th>WhatsApp</th>
+                <th>Presupuesto</th>
+                <th>Detalles</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table-body">
+              <tr>
+                <td colspan="9" style="text-align:center; padding:2rem; color:var(--text-dim);">
+                  Cargando solicitudes desde la base de datos...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Configuración Rápida de WhatsApp y Contacto -->
+      <section class="glass-card admin-config-card" style="margin-top:2rem; padding:2rem;">
+        <h3 style="font-size:1.2rem; margin-bottom:1rem;">Configuración de Enlace a WhatsApp</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.5rem;">
+          Este es el número oficial que recibe todos los clics de cotización y pedidos de la plataforma.
+        </p>
+
+        <form id="admin-config-form" style="display:grid; grid-template-columns: repeat(3, 1fr) auto; gap:1rem; align-items:end;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Número de WhatsApp (con código de país 51)</label>
+            <input type="text" id="config-wa-number" class="form-input" value="51929198813" required>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Texto Visible</label>
+            <input type="text" id="config-wa-display" class="form-input" value="+51 929 198 813">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Nuevo PIN (Opcional)</label>
+            <input type="password" id="config-new-pin" class="form-input" placeholder="Dejar vacío para no cambiar">
+          </div>
+          <button type="submit" class="btn btn-wa btn-sm" style="height:45px;">
+            Guardar Cambios
+          </button>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
