@@ -3,179 +3,428 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Administrativo | SERVICIOSWEB</title>
+  <title>Panel de Administración | SERVICIOSWEB</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2300e5ff'/><text x='50' y='65' font-size='50' font-weight='900' text-anchor='middle' fill='%23060913'>SW</text></svg>">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
-<body>
+<body class="admin-body">
 
   <!-- Pantalla de Bloqueo por PIN -->
   <div id="pin-lock-modal" class="pin-modal-overlay">
     <div class="glass-card pin-modal-card">
       <div class="pin-header">
-        <div class="brand-icon" style="margin: 0 auto 1rem auto;">SW</div>
+        <div class="brand-icon" style="margin: 0 auto 1.2rem auto; width:52px; height:52px; font-size:1.4rem;">SW</div>
         <h2>Acceso Administrativo</h2>
-        <p>Ingresa el PIN de seguridad para gestionar los clientes y servicios.</p>
+        <p>Ingresa el PIN de seguridad para gestionar los clientes y precios de SERVICIOSWEB.</p>
       </div>
       <form id="pin-form">
         <div class="form-group">
           <input type="password" id="admin-pin-input" class="form-input pin-input" maxlength="10" placeholder="••••" required autofocus autocomplete="off">
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
           <span>Ingresar al Panel</span>
           &rarr;
         </button>
-        <div id="pin-error-msg" class="pin-error-text" style="display:none;">PIN incorrecto. Inténtalo nuevamente.</div>
+        <div id="pin-error-msg" class="pin-error-text" style="display:none;">PIN incorrecto. Por favor inténtalo nuevamente.</div>
       </form>
-      <div style="margin-top:1.5rem; text-align:center;">
-        <a href="index.html" class="nav-link" style="font-size:0.85rem;">&larr; Volver a la página principal</a>
+      <div style="margin-top:1.8rem; text-align:center;">
+        <a href="index.html" class="nav-link" style="font-size:0.9rem;">&larr; Volver a la página web</a>
       </div>
     </div>
   </div>
 
-  <!-- Dashboard Principal -->
-  <div id="admin-dashboard" style="display:none;">
+  <!-- Estructura del Panel con Menú Lateral a la Izquierda -->
+  <div id="admin-dashboard" class="admin-layout" style="display:none;">
     
-    <!-- Topbar Admin -->
-    <header class="admin-topbar">
-      <div class="container admin-topbar-flex">
-        <div style="display:flex; align-items:center; gap:1rem;">
-          <a href="index.html" class="brand-logo">
-            <div class="brand-icon">SW</div>
+    <!-- BARRA LATERAL IZQUIERDA (SIDEBAR) -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="brand-logo" title="Ver sitio web">
+          <div class="brand-icon">SW</div>
+          <div class="sidebar-brand-text">
             <span class="brand-text">SERVICIOS<span class="gradient-cyan">WEB</span></span>
-          </a>
-          <span class="brand-badge" style="background:rgba(37,211,102,0.15); color:var(--whatsapp-green); border-color:rgba(37,211,102,0.3);">
-            PANEL DE CONTROL
-          </span>
-        </div>
-        <div style="display:flex; align-items:center; gap:1.2rem;">
-          <span id="neon-badge-status" class="neon-badge online">
-            <span class="hero-pill-dot" style="width:6px; height:6px;"></span>
-            Neon PostgreSQL Conectado
-          </span>
-          <button id="btn-logout" class="btn btn-outline btn-sm">Cerrar Sesión</button>
-        </div>
+            <span class="sidebar-role-badge">ADMIN PANEL</span>
+          </div>
+        </a>
       </div>
-    </header>
 
-    <main class="container admin-main">
-      
-      <!-- Métricas y Estadísticas Rápidas -->
-      <section class="admin-stats-grid">
-        <div class="glass-card admin-stat-box">
-          <div class="stat-meta">
-            <span class="stat-title">Total Solicitudes</span>
-            <span class="stat-icon cyan">📊</span>
-          </div>
-          <div class="stat-number" id="stat-total-leads">0</div>
-          <div class="stat-sub">Prospectos captados en la web</div>
-        </div>
+      <!-- Menú de Navegación Lateral -->
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-title">GESTIÓN COMERCIAL</div>
 
-        <div class="glass-card admin-stat-box">
-          <div class="stat-meta">
-            <span class="stat-title">Páginas Web</span>
-            <span class="stat-icon blue">🌐</span>
-          </div>
-          <div class="stat-number" id="stat-web-leads">0</div>
-          <div class="stat-sub">Interesados en sitios & landing</div>
-        </div>
+        <button type="button" class="sidebar-nav-item active" data-tab="tab-clientes" id="nav-item-clientes">
+          <span class="nav-item-icon">📋</span>
+          <span class="nav-item-text">Registros de Clientes</span>
+          <span class="sidebar-counter-badge" id="sidebar-counter-leads">0</span>
+        </button>
 
-        <div class="glass-card admin-stat-box">
-          <div class="stat-meta">
-            <span class="stat-title">Catálogos Digitales</span>
-            <span class="stat-icon green">🛒</span>
-          </div>
-          <div class="stat-number" id="stat-catalogo-leads">0</div>
-          <div class="stat-sub">Interesados en catálogos WhatsApp</div>
-        </div>
+        <button type="button" class="sidebar-nav-item" data-tab="tab-precios" id="nav-item-precios">
+          <span class="nav-item-icon">💰</span>
+          <span class="nav-item-text">Modificar Precios</span>
+          <span class="sidebar-pill-badge">En Vivo</span>
+        </button>
 
-        <div class="glass-card admin-stat-box">
-          <div class="stat-meta">
-            <span class="stat-title">Redes Sociales</span>
-            <span class="stat-icon purple">📱</span>
-          </div>
-          <div class="stat-number" id="stat-redes-leads">0</div>
-          <div class="stat-sub">Interesados en gestión y contenido</div>
-        </div>
-      </section>
+        <div class="sidebar-section-title" style="margin-top:1.5rem;">SISTEMA & CONTACTO</div>
 
-      <!-- Tabla de Prospectos / Clientes Captados -->
-      <section class="glass-card admin-table-card">
-        <div class="admin-card-header">
+        <button type="button" class="sidebar-nav-item" data-tab="tab-configuracion" id="nav-item-config">
+          <span class="nav-item-icon">⚙️</span>
+          <span class="nav-item-text">Configurar WhatsApp</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-tab="tab-metricas" id="nav-item-metricas">
+          <span class="nav-item-icon">📊</span>
+          <span class="nav-item-text">Métricas & Resumen</span>
+        </button>
+      </nav>
+
+      <!-- Pie de la Barra Lateral -->
+      <div class="sidebar-footer">
+        <div class="sidebar-db-status">
+          <span class="hero-pill-dot" style="width:8px; height:8px;"></span>
           <div>
-            <h2 style="font-size:1.4rem;">Clientes y Solicitudes de Cotización</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted);">
-              Sincronizado en tiempo real con Neon PostgreSQL (<code id="db-name-label">SERVICIOSWEB</code>)
+            <div style="font-weight:700; color:#fff; font-size:0.8rem;">Neon PostgreSQL</div>
+            <div style="font-size:0.72rem; color:var(--neon-cyan);">DB: SERVICIOSWEB</div>
+          </div>
+        </div>
+
+        <a href="index.html" target="_blank" class="sidebar-ext-link" title="Abrir página web en nueva pestaña">
+          <span>🌐 Ver Sitio Web</span>
+          <span>&rarr;</span>
+        </a>
+
+        <button type="button" id="btn-logout" class="btn btn-outline btn-sm sidebar-logout-btn">
+          <span>🚪 Cerrar Sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO PRINCIPAL (DERECHA) -->
+    <div class="admin-content-area">
+      
+      <!-- Topbar de la Pantalla Principal -->
+      <header class="admin-header-bar">
+        <div class="admin-header-title-box">
+          <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" aria-label="Alternar menú lateral">
+            ☰
+          </button>
+          <div>
+            <h1 class="admin-page-title" id="admin-current-section-title">Registros de Clientes</h1>
+            <p class="admin-page-subtitle" id="admin-current-section-desc">
+              Listado en tiempo real de prospectos y solicitudes que han cotizado en la web.
             </p>
           </div>
-          <div style="display:flex; gap:0.8rem;">
-            <select id="filter-lead-status" class="form-select" style="width:auto; padding:0.4rem 1rem; font-size:0.85rem;">
-              <option value="">Todos los Estados</option>
-              <option value="nuevo">Nuevos</option>
-              <option value="contactado">Contactados</option>
-              <option value="cerrado">Cerrados / Clientes</option>
-            </select>
-            <button id="btn-refresh-leads" class="btn btn-outline btn-sm">
-              🔄 Actualizar
-            </button>
-          </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cliente / Negocio</th>
-                <th>Servicio Requerido</th>
-                <th>WhatsApp</th>
-                <th>Presupuesto</th>
-                <th>Detalles</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="leads-table-body">
-              <tr>
-                <td colspan="9" style="text-align:center; padding:2rem; color:var(--text-dim);">
-                  Cargando solicitudes desde la base de datos...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Configuración Rápida de WhatsApp y Contacto -->
-      <section class="glass-card admin-config-card" style="margin-top:2rem; padding:2rem;">
-        <h3 style="font-size:1.2rem; margin-bottom:1rem;">Configuración de Enlace a WhatsApp</h3>
-        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1.5rem;">
-          Este es el número oficial que recibe todos los clics de cotización y pedidos de la plataforma.
-        </p>
-
-        <form id="admin-config-form" style="display:grid; grid-template-columns: repeat(3, 1fr) auto; gap:1rem; align-items:end;">
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label">Número de WhatsApp (con código de país 51)</label>
-            <input type="text" id="config-wa-number" class="form-input" value="51929198813" required>
+        <div class="admin-header-actions">
+          <div class="neon-badge online">
+            <span class="hero-pill-dot" style="width:6px; height:6px;"></span>
+            <span>WhatsApp Activo: <strong id="topbar-wa-label">+51 929 198 813</strong></span>
           </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label">Texto Visible</label>
-            <input type="text" id="config-wa-display" class="form-input" value="+51 929 198 813">
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label">Nuevo PIN (Opcional)</label>
-            <input type="password" id="config-new-pin" class="form-input" placeholder="Dejar vacío para no cambiar">
-          </div>
-          <button type="submit" class="btn btn-wa btn-sm" style="height:45px;">
-            Guardar Cambios
+          <button type="button" id="btn-refresh-data" class="btn btn-outline btn-sm" title="Refrescar datos de Neon">
+            🔄 Actualizar
           </button>
-        </form>
-      </section>
+        </div>
+      </header>
 
-    </main>
+      <!-- CONTENIDO DE LAS PESTAÑAS (TABS) -->
+      <main class="admin-tab-wrapper">
+
+        <!-- ====================================================================
+             TAB 1: REGISTROS DE CLIENTES (LEADS)
+             ==================================================================== -->
+        <section class="admin-tab-pane active" id="tab-clientes">
+          
+          <!-- Mini Resumen Superior -->
+          <div class="admin-stats-grid">
+            <div class="glass-card admin-stat-box">
+              <div class="stat-meta">
+                <span class="stat-title">Total Solicitudes</span>
+                <span class="stat-icon cyan">👥</span>
+              </div>
+              <div class="stat-number" id="stat-total-leads">0</div>
+              <div class="stat-sub">Registros en Neon PostgreSQL</div>
+            </div>
+
+            <div class="glass-card admin-stat-box">
+              <div class="stat-meta">
+                <span class="stat-title">Nuevos Sin Atender</span>
+                <span class="stat-icon green">⚡</span>
+              </div>
+              <div class="stat-number" id="stat-new-leads" style="color:var(--whatsapp-green);">0</div>
+              <div class="stat-sub">Pendientes de contacto</div>
+            </div>
+
+            <div class="glass-card admin-stat-box">
+              <div class="stat-meta">
+                <span class="stat-title">Páginas Web</span>
+                <span class="stat-icon blue">🌐</span>
+              </div>
+              <div class="stat-number" id="stat-web-leads">0</div>
+              <div class="stat-sub">Interesados en sitios web</div>
+            </div>
+
+            <div class="glass-card admin-stat-box">
+              <div class="stat-meta">
+                <span class="stat-title">Catálogos & Redes</span>
+                <span class="stat-icon purple">🛒</span>
+              </div>
+              <div class="stat-number" id="stat-cat-redes-leads">0</div>
+              <div class="stat-sub">Catálogos y redes sociales</div>
+            </div>
+          </div>
+
+          <!-- Tabla Completa de Prospectos -->
+          <div class="glass-card admin-table-card">
+            <div class="admin-card-header">
+              <div>
+                <h2 style="font-size:1.3rem;">Bandeja de Prospectos Registrados</h2>
+                <p style="font-size:0.85rem; color:var(--text-muted);">
+                  Los clientes que cotizan en la web se guardan aquí y pueden ser contactados con 1 toque.
+                </p>
+              </div>
+
+              <!-- Filtros -->
+              <div style="display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap;">
+                <label for="filter-lead-status" style="font-size:0.82rem; color:var(--text-dim);">Filtrar por estado:</label>
+                <select id="filter-lead-status" class="form-select" style="width:auto; padding:0.45rem 1rem; font-size:0.85rem;">
+                  <option value="">Todos los Estados</option>
+                  <option value="nuevo">Nuevos</option>
+                  <option value="contactado">Contactados</option>
+                  <option value="cerrado">Cerrados / Clientes Ganados</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Cliente / Negocio</th>
+                    <th>Servicio Solicitado</th>
+                    <th>WhatsApp Directo</th>
+                    <th>Presupuesto</th>
+                    <th>Detalles / Extras</th>
+                    <th>Fecha y Hora</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-table-body">
+                  <tr>
+                    <td colspan="9" style="text-align:center; padding:3rem; color:var(--text-dim);">
+                      Cargando registros desde la base de datos Neon PostgreSQL...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             TAB 2: MODIFICAR PRECIOS (GESTIÓN DE PRECIOS EN VIVO)
+             ==================================================================== -->
+        <section class="admin-tab-pane" id="tab-precios">
+          <div class="glass-card" style="padding:2.2rem; margin-bottom:2rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.8rem; padding-bottom:1.2rem; border-bottom:1px solid var(--border-subtle);">
+              <div>
+                <h2 style="font-size:1.5rem; margin-bottom:0.3rem;">Modificación de Precios de los Servicios</h2>
+                <p style="font-size:0.9rem; color:var(--text-muted);">
+                  Cambia libremente los precios y notas que se muestran a tus clientes en la página web principal.
+                </p>
+              </div>
+              <div class="neon-badge" style="background:rgba(37,211,102,0.12); color:var(--whatsapp-green); border-color:rgba(37,211,102,0.3);">
+                ⚡ Cambios reflejados en tiempo real
+              </div>
+            </div>
+
+            <form id="form-manage-prices">
+              <div class="prices-editor-grid">
+                
+                <!-- Tarjeta Precio: Páginas Web -->
+                <div class="glass-card price-edit-card">
+                  <div class="price-edit-header">
+                    <div class="stat-icon blue">🌐</div>
+                    <div>
+                      <h3 class="price-edit-title">Páginas Web Profesionales</h3>
+                      <p class="price-edit-subtitle">Landing pages y webs corporativas</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="price-web-val">Precio a mostrar (Ej: S/ 350, Desde S/ 250, A Cotizar):</label>
+                    <input type="text" id="price-web-val" class="form-input" placeholder="Ej: Desde S/ 250 o A Cotizar" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="price-web-note">Etiqueta o Nota explicativa:</label>
+                    <input type="text" id="price-web-note" class="form-input" placeholder="Ej: Cotización inmediata / Pago único">
+                  </div>
+                </div>
+
+                <!-- Tarjeta Precio: Catálogos Digitales -->
+                <div class="glass-card price-edit-card">
+                  <div class="price-edit-header">
+                    <div class="stat-icon green">🛒</div>
+                    <div>
+                      <h3 class="price-edit-title">Catálogos Digitales con WhatsApp</h3>
+                      <p class="price-edit-subtitle">Catálogos con carrito interactivo y pedidos</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="price-cat-val">Precio a mostrar (Ej: S/ 280, Desde S/ 190, A Cotizar):</label>
+                    <input type="text" id="price-cat-val" class="form-input" placeholder="Ej: Desde S/ 190 o A Cotizar" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="price-cat-note">Etiqueta o Nota explicativa:</label>
+                    <input type="text" id="price-cat-note" class="form-input" placeholder="Ej: Planes accesibles / Según productos">
+                  </div>
+                </div>
+
+                <!-- Tarjeta Precio: Redes Sociales -->
+                <div class="glass-card price-edit-card">
+                  <div class="price-edit-header">
+                    <div class="stat-icon purple">📱</div>
+                    <div>
+                      <h3 class="price-edit-title">Manejo de Redes Sociales</h3>
+                      <p class="price-edit-subtitle">Contenido, diseño gráfico, reels y pauta</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="price-redes-val">Precio a mostrar (Ej: Desde S/ 300 /mes, A Cotizar):</label>
+                    <input type="text" id="price-redes-val" class="form-input" placeholder="Ej: Desde S/ 300 /mes o A Cotizar" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="price-redes-note">Etiqueta o Nota explicativa:</label>
+                    <input type="text" id="price-redes-note" class="form-input" placeholder="Ej: Planes mensuales / Asesoría continua">
+                  </div>
+                </div>
+
+                <!-- Tarjeta Precio: Pack Todo en Uno -->
+                <div class="glass-card price-edit-card">
+                  <div class="price-edit-header">
+                    <div class="stat-icon cyan">🚀</div>
+                    <div>
+                      <h3 class="price-edit-title">Pack Completo Todo en Uno</h3>
+                      <p class="price-edit-subtitle">Web + Catálogo + Redes Sociales</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="price-pack-val">Precio a mostrar (Ej: S/ 750, A Consultar):</label>
+                    <input type="text" id="price-pack-val" class="form-input" placeholder="Ej: A Consultar o Pack Promocional" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" for="price-pack-note">Etiqueta o Nota explicativa:</label>
+                    <input type="text" id="price-pack-note" class="form-input" placeholder="Ej: Máximo ahorro comercial">
+                  </div>
+                </div>
+
+              </div>
+
+              <div style="margin-top:2.5rem; display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary btn-lg" id="btn-save-prices" style="min-width:260px;">
+                  <span>💾 Guardar Precios en la Base de Datos</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             TAB 3: CONFIGURACIÓN GENERAL (WHATSAPP, PIN, MENSAJES)
+             ==================================================================== -->
+        <section class="admin-tab-pane" id="tab-configuracion">
+          <div class="glass-card" style="padding:2.2rem;">
+            <div style="margin-bottom:1.8rem; padding-bottom:1.2rem; border-bottom:1px solid var(--border-subtle);">
+              <h2 style="font-size:1.5rem; margin-bottom:0.3rem;">Configuración del WhatsApp de Contacto</h2>
+              <p style="font-size:0.9rem; color:var(--text-muted);">
+                A este número se direccionan todos los botones de cotización, el cotizador y el chat flotante de la web.
+              </p>
+            </div>
+
+            <form id="admin-config-form">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                <div class="form-group">
+                  <label class="form-label" for="config-wa-number">Número de WhatsApp (con prefijo 51 de Perú)</label>
+                  <input type="text" id="config-wa-number" class="form-input" value="51929198813" placeholder="51929198813" required>
+                  <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem;">Debe incluir el código de país sin signo + (Ej: 51929198813).</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="config-wa-display">Formato Visual para Clientes</label>
+                  <input type="text" id="config-wa-display" class="form-input" value="+51 929 198 813" placeholder="+51 929 198 813">
+                  <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem;">Es como se ve escrito en el encabezado y botones.</div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem;">
+                <div class="form-group">
+                  <label class="form-label" for="config-agency-name">Nombre de la Agencia</label>
+                  <input type="text" id="config-agency-name" class="form-input" value="SERVICIOSWEB">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="config-new-pin">Cambiar PIN de Acceso (Opcional)</label>
+                  <input type="password" id="config-new-pin" class="form-input" placeholder="Dejar vacío para mantener el actual (1234)">
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-wa btn-lg" style="min-width:240px;">
+                  <span>Guardar Configuración</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             TAB 4: MÉTRICAS & DIAGNÓSTICO
+             ==================================================================== -->
+        <section class="admin-tab-pane" id="tab-metricas">
+          <div class="glass-card" style="padding:2.2rem;">
+            <h2 style="font-size:1.5rem; margin-bottom:1rem;">Diagnóstico del Sistema & Almacenamiento</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:2rem;">
+              Estado de los servicios en la nube vinculados a SERVICIOSWEB.
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+              <div class="glass-card" style="padding:1.5rem; border-color:rgba(0,229,255,0.3);">
+                <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+                  <span class="stat-icon cyan">🐘</span>
+                  <div>
+                    <h3 style="font-size:1.1rem;">Neon PostgreSQL</h3>
+                    <div style="font-size:0.8rem; color:var(--whatsapp-green);">● Base de Datos Operativa</div>
+                  </div>
+                </div>
+                <ul style="list-style:none; font-size:0.85rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.5rem;">
+                  <li><strong>Base de datos:</strong> <code>SERVICIOSWEB</code></li>
+                  <li><strong>Región:</strong> AWS us-east-1 (Serverless)</li>
+                  <li><strong>Tablas activas:</strong> <code>leads</code>, <code>site_config</code>, <code>services</code></li>
+                </ul>
+              </div>
+
+              <div class="glass-card" style="padding:1.5rem; border-color:rgba(245,158,11,0.3);">
+                <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1rem;">
+                  <span class="stat-icon" style="background:rgba(245,158,11,0.15); color:var(--accent-amber);">☁️</span>
+                  <div>
+                    <h3 style="font-size:1.1rem;">Cloudflare R2</h3>
+                    <div style="font-size:0.8rem; color:var(--accent-amber);">● Almacenamiento de Fotos S3</div>
+                  </div>
+                </div>
+                <ul style="list-style:none; font-size:0.85rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.5rem;">
+                  <li><strong>Bucket:</strong> <code>serviciosweb</code></li>
+                  <li><strong>Endpoint:</strong> R2 Cloudflare S3 API</li>
+                  <li><strong>Carga liviana:</strong> WebP automático (&le; 1 MB)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
   </div>
 
   <script src="js/admin.js"></script>

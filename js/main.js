@@ -66,5 +66,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 5. Carga dinámica de precios y WhatsApp desde Neon PostgreSQL
+    async function syncDynamicConfig() {
+        if (!window.API) return;
+        try {
+            const data = await window.API.getConfig();
+            if (data.success && data.config) {
+                const cfg = data.config;
+
+                // Actualizar WhatsApp si se modificó en el panel
+                if (cfg.whatsappNumber) {
+                    window.API.WHATSAPP_NUMBER = cfg.whatsappNumber;
+                }
+
+                // Actualizar precios dinámicos desde Neon
+                if (cfg.prices) {
+                    const p = cfg.prices;
+
+                    const priceWeb = document.getElementById('price-web-display');
+                    const noteWeb = document.getElementById('note-web-display');
+                    if (priceWeb && p.webPrice) priceWeb.textContent = p.webPrice;
+                    if (noteWeb && p.webNote) noteWeb.textContent = p.webNote;
+
+                    const priceCat = document.getElementById('price-cat-display');
+                    const noteCat = document.getElementById('note-cat-display');
+                    if (priceCat && p.catalogoPrice) priceCat.textContent = p.catalogoPrice;
+                    if (noteCat && p.catalogoNote) noteCat.textContent = p.catalogoNote;
+
+                    const priceRedes = document.getElementById('price-redes-display');
+                    const noteRedes = document.getElementById('note-redes-display');
+                    if (priceRedes && p.redesPrice) priceRedes.textContent = p.redesPrice;
+                    if (noteRedes && p.redesNote) noteRedes.textContent = p.redesNote;
+                }
+            }
+        } catch (err) {
+            console.warn('Usando configuración predeterminada:', err);
+        }
+    }
+
+    syncDynamicConfig();
+
     console.log('⚡ SERVICIOSWEB inicializado exitosamente.');
 });
