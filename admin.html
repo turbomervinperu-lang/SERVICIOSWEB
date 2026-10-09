@@ -440,7 +440,10 @@
                       <input type="checkbox" id="check-net-fb" class="social-toggle-checkbox" checked data-net="facebook">
                       <span>📘 Facebook</span>
                     </label>
-                    <span class="social-status-indicator ready" id="status-net-fb">● Activo</span>
+                    <div class="social-status-indicator connected" id="status-net-fb" title="Luz Verde: Enlazada | Luz Roja: Error">
+                      <span class="led-light-bulb"></span>
+                      <span class="status-text">Enlazada</span>
+                    </div>
                   </div>
                   <div class="social-card-body">
                     <div>
@@ -453,6 +456,12 @@
                         <input type="password" id="pass-net-fb" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-fb" title="Mostrar/ocultar clave">👁️</button>
                       </div>
+                    </div>
+
+                    <!-- Fila de Estado de Enlace y Comprobación -->
+                    <div class="social-test-row">
+                      <div class="net-feedback-msg success" id="feedback-net-fb">🟢 Luz Verde: Enlazada con el proyecto</div>
+                      <button type="button" class="btn-test-net-conn" data-net="fb" title="Probar si el usuario y clave enlazan con el proyecto">⚡ Probar Enlace</button>
                     </div>
 
                     <!-- Opciones de publicación en Facebook -->
@@ -516,7 +525,10 @@
                       <input type="checkbox" id="check-net-ig" class="social-toggle-checkbox" checked data-net="instagram">
                       <span>📸 Instagram</span>
                     </label>
-                    <span class="social-status-indicator ready" id="status-net-ig">● Activo</span>
+                    <div class="social-status-indicator connected" id="status-net-ig" title="Luz Verde: Enlazada | Luz Roja: Error">
+                      <span class="led-light-bulb"></span>
+                      <span class="status-text">Enlazada</span>
+                    </div>
                   </div>
                   <div class="social-card-body">
                     <div>
@@ -530,6 +542,10 @@
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-ig" title="Mostrar/ocultar clave">👁️</button>
                       </div>
                     </div>
+                    <div class="social-test-row">
+                      <div class="net-feedback-msg success" id="feedback-net-ig">🟢 Luz Verde: Enlazada con el proyecto</div>
+                      <button type="button" class="btn-test-net-conn" data-net="ig" title="Probar si el usuario y clave enlazan con el proyecto">⚡ Probar Enlace</button>
+                    </div>
                   </div>
                 </div>
 
@@ -540,7 +556,10 @@
                       <input type="checkbox" id="check-net-wa" class="social-toggle-checkbox" checked data-net="whatsapp">
                       <span>💬 WhatsApp Business</span>
                     </label>
-                    <span class="social-status-indicator ready" id="status-net-wa">● Activo</span>
+                    <div class="social-status-indicator connected" id="status-net-wa" title="Luz Verde: Enlazada | Luz Roja: Error">
+                      <span class="led-light-bulb"></span>
+                      <span class="status-text">Enlazada</span>
+                    </div>
                   </div>
                   <div class="social-card-body">
                     <div>
@@ -554,6 +573,10 @@
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-wa" title="Mostrar/ocultar clave">👁️</button>
                       </div>
                     </div>
+                    <div class="social-test-row">
+                      <div class="net-feedback-msg success" id="feedback-net-wa">🟢 Luz Verde: Enlazada con el proyecto</div>
+                      <button type="button" class="btn-test-net-conn" data-net="wa" title="Probar si el número enlaza con el proyecto">⚡ Probar Enlace</button>
+                    </div>
                   </div>
                 </div>
 
@@ -564,7 +587,10 @@
                       <input type="checkbox" id="check-net-tt" class="social-toggle-checkbox" data-net="tiktok">
                       <span>🎵 TikTok</span>
                     </label>
-                    <span class="social-status-indicator pending" id="status-net-tt">○ Opcional</span>
+                    <div class="social-status-indicator off" id="status-net-tt" title="Luz Verde: Enlazada | Luz Roja: Error">
+                      <span class="led-light-bulb"></span>
+                      <span class="status-text">Sin Enlazar</span>
+                    </div>
                   </div>
                   <div class="social-card-body">
                     <div>
@@ -578,6 +604,10 @@
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-tt" title="Mostrar/ocultar clave">👁️</button>
                       </div>
                     </div>
+                    <div class="social-test-row">
+                      <div class="net-feedback-msg info" id="feedback-net-tt">⚪ Sin Enlazar: Activa la red e ingresa tus datos</div>
+                      <button type="button" class="btn-test-net-conn" data-net="tt" title="Probar si el usuario y clave enlazan con el proyecto">⚡ Probar Enlace</button>
+                    </div>
                   </div>
                 </div>
 
@@ -588,7 +618,10 @@
                       <input type="checkbox" id="check-net-tw" class="social-toggle-checkbox" data-net="twitter">
                       <span>✖️ X (Twitter)</span>
                     </label>
-                    <span class="social-status-indicator pending" id="status-net-tw">○ Opcional</span>
+                    <div class="social-status-indicator off" id="status-net-tw" title="Luz Verde: Enlazada | Luz Roja: Error">
+                      <span class="led-light-bulb"></span>
+                      <span class="status-text">Sin Enlazar</span>
+                    </div>
                   </div>
                   <div class="social-card-body">
                     <div>
@@ -601,6 +634,10 @@
                         <input type="password" id="pass-net-tw" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-tw" title="Mostrar/ocultar clave">👁️</button>
                       </div>
+                    </div>
+                    <div class="social-test-row">
+                      <div class="net-feedback-msg info" id="feedback-net-tw">⚪ Sin Enlazar: Activa la red e ingresa tus datos</div>
+                      <button type="button" class="btn-test-net-conn" data-net="tw" title="Probar si el usuario y clave enlazan con el proyecto">⚡ Probar Enlace</button>
                     </div>
                   </div>
                 </div>

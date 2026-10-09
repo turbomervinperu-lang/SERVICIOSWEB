@@ -474,25 +474,117 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ==============================================================================
+    // SISTEMA DE LUCES LED: VERDE (ENLAZADA) / ROJA (ERROR DE CREDENCIALES)
+    // ==============================================================================
+    function updateNetworkLedStatus(netShort) {
+        const chk = document.getElementById(`check-net-${netShort}`);
+        const userInp = document.getElementById(`user-net-${netShort}`);
+        const passInp = document.getElementById(`pass-net-${netShort}`);
+        const statusElem = document.getElementById(`status-net-${netShort}`);
+        const feedbackElem = document.getElementById(`feedback-net-${netShort}`);
+        const cardElem = document.getElementById(`card-net-${netShort}`);
+
+        if (!statusElem) return { ok: false, active: false };
+        const statusText = statusElem.querySelector('.status-text') || statusElem;
+
+        const isChecked = chk ? chk.checked : false;
+        const userVal = userInp ? userInp.value.trim() : '';
+        const passVal = passInp ? passInp.value.trim() : '';
+
+        // Si la red no está seleccionada / inactiva
+        if (!isChecked) {
+            cardElem?.classList.remove('enabled');
+            statusElem.className = 'social-status-indicator off';
+            if (statusText) statusText.textContent = 'Sin Enlazar';
+            if (feedbackElem) {
+                feedbackElem.className = 'net-feedback-msg info';
+                feedbackElem.textContent = '⚪ Red desactivada para esta campaña.';
+            }
+            return { ok: false, active: false };
+        }
+
+        cardElem?.classList.add('enabled');
+
+        // Validar credenciales de enlace
+        let hasError = false;
+        let errorMsg = '';
+
+        if (!userVal && !passVal) {
+            hasError = true;
+            errorMsg = 'Falta ingresar usuario y contraseña.';
+        } else if (!userVal) {
+            hasError = true;
+            errorMsg = 'Falta ingresar el usuario o correo.';
+        } else if (!passVal) {
+            hasError = true;
+            errorMsg = 'Falta ingresar la contraseña o PIN.';
+        } else if (passVal.length < 4) {
+            hasError = true;
+            errorMsg = 'Contraseña demasiado corta (mínimo 4 caracteres).';
+        } else if (netShort === 'wa' && userVal.replace(/\D/g, '').length < 8) {
+            hasError = true;
+            errorMsg = 'Número telefónico incompleto (incluye código de país).';
+        }
+
+        if (hasError) {
+            // 🔴 LUZ ROJA: Error de enlace / credencial incorrecta o incompleta
+            statusElem.className = 'social-status-indicator error';
+            if (statusText) statusText.textContent = 'No Enlazada';
+            if (feedbackElem) {
+                feedbackElem.className = 'net-feedback-msg error';
+                feedbackElem.textContent = `🔴 Luz Roja: ${errorMsg}`;
+            }
+            return { ok: false, active: true, error: errorMsg };
+        } else {
+            // 🟢 LUZ VERDE: Enlace exitoso con el proyecto
+            statusElem.className = 'social-status-indicator connected';
+            if (statusText) statusText.textContent = 'Enlazada';
+            if (feedbackElem) {
+                feedbackElem.className = 'net-feedback-msg success';
+                feedbackElem.textContent = '🟢 Luz Verde: Enlazada con el proyecto exitosamente.';
+            }
+            return { ok: true, active: true };
+        }
+    }
+
+    // Botones de probar enlace individual con simulación de verificación
+    document.querySelectorAll('.btn-test-net-conn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const net = btn.getAttribute('data-net');
+            const statusElem = document.getElementById(`status-net-${net}`);
+            const feedbackElem = document.getElementById(`feedback-net-${net}`);
+            const statusText = statusElem?.querySelector('.status-text');
+
+            if (statusElem) statusElem.className = 'social-status-indicator checking';
+            if (statusText) statusText.textContent = 'Verificando...';
+            if (feedbackElem) {
+                feedbackElem.className = 'net-feedback-msg info';
+                feedbackElem.textContent = '⏳ Probando credenciales y enlace con el proyecto...';
+            }
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                updateNetworkLedStatus(net);
+            }, 600);
+        });
+    });
+
+    // Escucha en tiempo real de inputs de usuario y contraseña para refrescar luz LED
+    ['fb', 'ig', 'wa', 'tt', 'tw'].forEach(net => {
+        const userInp = document.getElementById(`user-net-${net}`);
+        const passInp = document.getElementById(`pass-net-${net}`);
+        userInp?.addEventListener('input', () => updateNetworkLedStatus(net));
+        passInp?.addEventListener('input', () => updateNetworkLedStatus(net));
+    });
+
     // Checkboxes de activación de redes sociales
     socialCheckboxes.forEach(chk => {
         chk.addEventListener('change', () => {
-            const net = chk.getAttribute('data-net');
-            const card = document.getElementById(`card-net-${net}`);
-            const status = document.getElementById(`status-net-${net}`);
-            if (chk.checked) {
-                card?.classList.add('enabled');
-                if (status) {
-                    status.className = 'social-status-indicator ready';
-                    status.textContent = '● Activo';
-                }
-            } else {
-                card?.classList.remove('enabled');
-                if (status) {
-                    status.className = 'social-status-indicator pending';
-                    status.textContent = '○ Inactivo';
-                }
-            }
+            const netFull = chk.getAttribute('data-net');
+            const net = netFull === 'facebook' ? 'fb' : (netFull === 'instagram' ? 'ig' : (netFull === 'whatsapp' ? 'wa' : (netFull === 'tiktok' ? 'tt' : 'tw')));
+            updateNetworkLedStatus(net);
             updateSocialCountBadge();
         });
     });
@@ -518,29 +610,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (chk && creds[net].enabled !== undefined) chk.checked = creds[net].enabled;
                         if (user && creds[net].user) user.value = creds[net].user;
                         if (pass && creds[net].pass) pass.value = creds[net].pass;
-
-                        const card = document.getElementById(`card-net-${net}`);
-                        const status = document.getElementById(`status-net-${net}`);
-                        if (chk?.checked) {
-                            card?.classList.add('enabled');
-                            if (status) {
-                                status.className = 'social-status-indicator ready';
-                                status.textContent = '● Activo';
-                            }
-                        } else {
-                            card?.classList.remove('enabled');
-                            if (status) {
-                                status.className = 'social-status-indicator pending';
-                                status.textContent = '○ Inactivo';
-                            }
-                        }
                     }
+                    updateNetworkLedStatus(net);
                 });
                 updateSocialCountBadge();
                 unlockFlyerModule(false);
+            } else {
+                ['fb', 'ig', 'wa', 'tt', 'tw'].forEach(net => updateNetworkLedStatus(net));
             }
         } catch (e) {
             console.warn('Error cargando credenciales de redes:', e);
+            ['fb', 'ig', 'wa', 'tt', 'tw'].forEach(net => updateNetworkLedStatus(net));
         }
     }
 
@@ -582,20 +662,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const creds = {};
+        const errors = [];
+        let successCount = 0;
+
         ['fb', 'ig', 'wa', 'tt', 'tw'].forEach(net => {
             const chk = document.getElementById(`check-net-${net}`);
             const user = document.getElementById(`user-net-${net}`);
             const pass = document.getElementById(`pass-net-${net}`);
+            const isEnabled = chk ? chk.checked : false;
+
             creds[net] = {
-                enabled: chk ? chk.checked : false,
+                enabled: isEnabled,
                 user: user ? user.value.trim() : '',
                 pass: pass ? pass.value : ''
             };
+
+            const verification = updateNetworkLedStatus(net);
+            if (isEnabled) {
+                if (!verification.ok) {
+                    const name = net === 'fb' ? 'Facebook' : (net === 'ig' ? 'Instagram' : (net === 'wa' ? 'WhatsApp' : (net === 'tt' ? 'TikTok' : 'Twitter/X')));
+                    errors.push(`• ${name}: ${verification.error}`);
+                } else {
+                    successCount++;
+                }
+            }
         });
 
         localStorage.setItem('serviciosweb_social_creds', JSON.stringify(creds));
         unlockFlyerModule(true);
-        alert(`✅ ¡Cuentas configuradas exitosamente!\n\nSe han registrado ${checkedList.length} redes sociales con sus respectivos usuarios y contraseñas.\nEl Módulo de Creación de Flyers ha sido ACTIVADO abajo.`);
+
+        if (errors.length > 0) {
+            alert(`⚠️ ATENCIÓN: Redes con Luz Roja detectadas:\n\n${errors.join('\n')}\n\nHay ${errors.length} red(es) con problemas de usuario o contraseña.\nSe guardó tu avance y se activó el creador de flyers, pero por favor revisa los datos marcados con Luz Roja 🔴.`);
+        } else {
+            alert(`✅ ¡ENLACE EXITOSO CON EL PROYECTO!\n\nLas ${successCount} redes seleccionadas muestran LUZ VERDE 🟢.\nTodas las credenciales y usuarios fueron validados correctamente.\nEl Módulo de Creación de Flyers está activo abajo.`);
+        }
     });
 
     btnScrollToSocial?.addEventListener('click', () => {
