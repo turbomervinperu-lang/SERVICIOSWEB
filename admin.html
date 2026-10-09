@@ -6,8 +6,8 @@
   <title>Panel de Administración | SERVICIOSWEB</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2300e5ff'/><text x='50' y='65' font-size='50' font-weight='900' text-anchor='middle' fill='%23060913'>SW</text></svg>">
-  <link rel="stylesheet" href="css/styles.css?v=flyer">
-  <link rel="stylesheet" href="css/admin.css?v=flyer">
+  <link rel="stylesheet" href="css/styles.css?v=social3">
+  <link rel="stylesheet" href="css/admin.css?v=social3">
 </head>
 <body class="admin-body">
 
@@ -412,44 +412,209 @@
             </div>
 
             <!-- Barra de Configuración de API y Cuentas -->
-            <div class="glass-card" style="padding:1.4rem 1.8rem;">
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+            <!-- ====================================================================
+                 FASE 1: SELECCIÓN Y CONFIGURACIÓN DE REDES SOCIALES (USUARIO & CLAVE)
+                 ==================================================================== -->
+            <div class="social-setup-card" id="social-setup-box">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:0.6rem;">
                 <div>
-                  <label for="gemini-api-key-input" style="font-size:0.85rem; font-weight:700; color:var(--text-main); display:flex; justify-content:space-between;">
-                    <span>🔑 Clave de Google Gemini (Gratis):</span>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--neon-cyan); font-weight:600; font-size:0.78rem; text-decoration:none;">
-                      Obtener clave gratis en Google AI Studio &rarr;
-                    </a>
-                  </label>
-                  <input type="password" id="gemini-api-key-input" class="form-input" style="margin-top:0.4rem;" placeholder="Pega aquí tu clave AIzaSy... (o déjalo en blanco para modo demo asistido)">
-                  <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
-                    Se almacena de forma segura en tu navegador y permite análisis visuales ilimitados dentro del tier gratuito.
-                  </span>
+                  <h3 style="font-size:1.3rem; margin:0 0 0.3rem 0; display:flex; align-items:center; gap:0.6rem;">
+                    <span>🌐 Paso 1: Selecciona tus Redes Sociales y Coloca Usuario y Contraseña</span>
+                  </h3>
+                  <p style="font-size:0.88rem; color:var(--text-muted); margin:0;">
+                    Cada red social puede operar con un usuario o contraseña diferente. Marca las redes que utilizarás, ingresa las credenciales de cada una y haz clic en <strong>Guardar y Activar</strong> para desbloquear el creador de flyers.
+                  </p>
+                </div>
+                <div id="social-active-count-badge" class="neon-badge" style="background:rgba(0,229,255,0.1); color:var(--neon-cyan); border-color:rgba(0,229,255,0.3);">
+                  <span>3 Redes Seleccionadas</span>
+                </div>
+              </div>
+
+              <!-- Tarjetas de Credenciales por Cada Red Social -->
+              <div class="social-cards-grid">
+                
+                <!-- Red 1: Facebook -->
+                <div class="social-card-item enabled" id="card-net-fb">
+                  <div class="social-card-header">
+                    <label class="social-card-title" for="check-net-fb" style="cursor:pointer;">
+                      <input type="checkbox" id="check-net-fb" class="social-toggle-checkbox" checked data-net="facebook">
+                      <span>📘 Facebook</span>
+                    </label>
+                    <span class="social-status-indicator ready" id="status-net-fb">● Activo</span>
+                  </div>
+                  <div class="social-card-body">
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Usuario, Correo o Fan Page:</label>
+                      <input type="text" id="user-net-fb" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="ej: contacto@serviciosweb.pe">
+                    </div>
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Contraseña / Clave de Acceso:</label>
+                      <div class="pwd-wrapper">
+                        <input type="password" id="pass-net-fb" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
+                        <button type="button" class="btn-toggle-pwd" data-target="pass-net-fb" title="Mostrar/ocultar clave">👁️</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label for="social-sync-email" style="font-size:0.85rem; font-weight:700; color:var(--text-main);">
-                    ✉️ Correo Comercial para Redes Sociales:
-                  </label>
-                  <input type="email" id="social-sync-email" class="form-input" style="margin-top:0.4rem;" placeholder="ejemplo: marketing@serviciosweb.pe" value="contacto@serviciosweb.pe">
-                  <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
-                    Este correo se asocia a las cuentas de Facebook Ads, Instagram y WhatsApp Business para la sincronización.
-                  </span>
+                <!-- Red 2: Instagram -->
+                <div class="social-card-item enabled" id="card-net-ig">
+                  <div class="social-card-header">
+                    <label class="social-card-title" for="check-net-ig" style="cursor:pointer;">
+                      <input type="checkbox" id="check-net-ig" class="social-toggle-checkbox" checked data-net="instagram">
+                      <span>📸 Instagram</span>
+                    </label>
+                    <span class="social-status-indicator ready" id="status-net-ig">● Activo</span>
+                  </div>
+                  <div class="social-card-body">
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Usuario / @Perfil:</label>
+                      <input type="text" id="user-net-ig" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="ej: @serviciosweb_pe">
+                    </div>
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Contraseña / Clave de Acceso:</label>
+                      <div class="pwd-wrapper">
+                        <input type="password" id="pass-net-ig" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
+                        <button type="button" class="btn-toggle-pwd" data-target="pass-net-ig" title="Mostrar/ocultar clave">👁️</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                <!-- Red 3: WhatsApp Business -->
+                <div class="social-card-item enabled" id="card-net-wa">
+                  <div class="social-card-header">
+                    <label class="social-card-title" for="check-net-wa" style="cursor:pointer;">
+                      <input type="checkbox" id="check-net-wa" class="social-toggle-checkbox" checked data-net="whatsapp">
+                      <span>💬 WhatsApp Business</span>
+                    </label>
+                    <span class="social-status-indicator ready" id="status-net-wa">● Activo</span>
+                  </div>
+                  <div class="social-card-body">
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Número Oficial con Código de País:</label>
+                      <input type="text" id="user-net-wa" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" value="+51 929 198 813">
+                    </div>
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">PIN / Clave de Dos Pasos:</label>
+                      <div class="pwd-wrapper">
+                        <input type="password" id="pass-net-wa" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••">
+                        <button type="button" class="btn-toggle-pwd" data-target="pass-net-wa" title="Mostrar/ocultar clave">👁️</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Red 4: TikTok -->
+                <div class="social-card-item" id="card-net-tt">
+                  <div class="social-card-header">
+                    <label class="social-card-title" for="check-net-tt" style="cursor:pointer;">
+                      <input type="checkbox" id="check-net-tt" class="social-toggle-checkbox" data-net="tiktok">
+                      <span>🎵 TikTok</span>
+                    </label>
+                    <span class="social-status-indicator pending" id="status-net-tt">○ Opcional</span>
+                  </div>
+                  <div class="social-card-body">
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Usuario / @TikTok:</label>
+                      <input type="text" id="user-net-tt" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="ej: @serviciosweb_tiktok">
+                    </div>
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Contraseña:</label>
+                      <div class="pwd-wrapper">
+                        <input type="password" id="pass-net-tt" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
+                        <button type="button" class="btn-toggle-pwd" data-target="pass-net-tt" title="Mostrar/ocultar clave">👁️</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Red 5: X (Twitter) -->
+                <div class="social-card-item" id="card-net-tw">
+                  <div class="social-card-header">
+                    <label class="social-card-title" for="check-net-tw" style="cursor:pointer;">
+                      <input type="checkbox" id="check-net-tw" class="social-toggle-checkbox" data-net="twitter">
+                      <span>✖️ X (Twitter)</span>
+                    </label>
+                    <span class="social-status-indicator pending" id="status-net-tw">○ Opcional</span>
+                  </div>
+                  <div class="social-card-body">
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Usuario / @Twitter:</label>
+                      <input type="text" id="user-net-tw" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="ej: @serviciosweb_x">
+                    </div>
+                    <div>
+                      <label style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">Contraseña:</label>
+                      <div class="pwd-wrapper">
+                        <input type="password" id="pass-net-tw" class="form-input" style="padding:0.5rem 0.8rem; font-size:0.85rem;" placeholder="••••••••••••">
+                        <button type="button" class="btn-toggle-pwd" data-target="pass-net-tw" title="Mostrar/ocultar clave">👁️</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Botón Guardar y Activar -->
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; padding-top:0.8rem; border-top:1px solid var(--border-subtle);">
+                <div style="font-size:0.82rem; color:var(--text-dim);">
+                  🔒 Tus credenciales se protegen en tu sesión local y permiten abrir y sincronizar cada red automáticamente.
+                </div>
+                <button type="button" id="btn-save-social-accounts" class="btn btn-wa btn-lg" style="min-width:300px; justify-content:center; gap:0.6rem;">
+                  <span>💾 Guardar Cuentas & Activar Creador de Flyers</span> &rarr;
+                </button>
               </div>
             </div>
 
-            <!-- Grid Principal: Subida / Parámetros vs Visor de Flyer & Copy -->
-            <div class="pub-grid">
-              
-              <!-- COLUMNA 1: FORMULARIO DE PRODUCTO -->
-              <div class="glass-card" style="padding:1.8rem;">
-                <h3 style="font-size:1.2rem; margin-bottom:0.3rem; display:flex; align-items:center; gap:0.5rem;">
-                  <span>📸 Paso 1: Subir Producto & Precio</span>
-                </h3>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.4rem;">
-                  No necesitas escribir nada técnico. La IA de visión detectará automáticamente qué es.
-                </p>
+            <!-- Banner Informativo de Bloqueo / Activación -->
+            <div id="flyer-lock-banner" class="flyer-module-locked-banner" style="display:none;">
+              <h4>🔒 Creador de Flyers Bloqueado</h4>
+              <p>Para activar el módulo donde se coloca la imagen y precio, primero guarda las cuentas en el Paso 1 de arriba.</p>
+              <button type="button" id="btn-scroll-to-social" class="btn btn-primary btn-sm">
+                <span>Configurar Redes Sociales Ahora &uarr;</span>
+              </button>
+            </div>
+
+            <!-- Contenedor del Creador de Flyers (Se activa con Paso 1) -->
+            <div id="flyer-creation-wrapper" class="pub-grid-wrapper is-unlocked">
+              <div class="glass-card" style="padding:1.4rem 1.8rem; margin-bottom:1.5rem;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                  <div>
+                    <label for="gemini-api-key-input" style="font-size:0.85rem; font-weight:700; color:var(--text-main); display:flex; justify-content:space-between;">
+                      <span>🔑 Clave de Google Gemini (Gratis en Google AI Studio):</span>
+                      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--neon-cyan); font-weight:600; font-size:0.78rem; text-decoration:none;">
+                        Obtener clave gratis &rarr;
+                      </a>
+                    </label>
+                    <input type="password" id="gemini-api-key-input" class="form-input" style="margin-top:0.4rem;" placeholder="Pega tu clave AIzaSy... (o déjalo en blanco para auto-generación inteligente)">
+                    <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
+                      Si lo dejas en blanco o hay un error de conexión, el sistema activará automáticamente el generador inteligente sin interrumpirte.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label for="social-sync-email" style="font-size:0.85rem; font-weight:700; color:var(--text-main);">
+                      ✉️ Correo Principal del Negocio:
+                    </label>
+                    <input type="email" id="social-sync-email" class="form-input" style="margin-top:0.4rem;" placeholder="ejemplo: contacto@serviciosweb.pe" value="contacto@serviciosweb.pe">
+                    <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
+                      Correo central de vinculación de campañas y notificaciones.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grid Principal: Subida / Parámetros vs Visor de Flyer & Copy -->
+              <div class="pub-grid">
+                
+                <!-- COLUMNA 1: FORMULARIO DE PRODUCTO -->
+                <div class="glass-card" style="padding:1.8rem;">
+                  <h3 style="font-size:1.2rem; margin-bottom:0.3rem; display:flex; align-items:center; gap:0.5rem;">
+                    <span>📸 Paso 2: Subir Producto & Precio</span>
+                  </h3>
+                  <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.4rem;">
+                    Sube la foto del producto que deseas publicitar. Nuestro motor identificará sus características y armará el flyer.
+                  </p>
 
                 <!-- Dropzone de Imagen -->
                 <div class="pub-dropzone" id="pub-image-dropzone">
@@ -576,6 +741,7 @@
 
               </div>
             </div>
+          </div> <!-- Cierre de #flyer-creation-wrapper -->
 
             <!-- ====================================================================
                  PASO 3: PROGRAMACIÓN DE HORAS & APERTURA EN REDES SOCIALES
@@ -584,10 +750,10 @@
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
                 <div>
                   <h3 style="font-size:1.25rem; margin:0 0 0.3rem 0; display:flex; align-items:center; gap:0.6rem;">
-                    <span>🚀 Paso 2: Programación de Horas & Apertura de Redes</span>
+                    <span>🚀 Paso 3: Programación de Horas & Apertura de Redes</span>
                   </h3>
                   <p style="font-size:0.88rem; color:var(--text-muted); margin:0;">
-                    Programa las horas de mayor impacto del día o abre directamente las redes sociales asociadas a tu correo.
+                    Abre de inmediato o programa las horas pico para publicar en las redes seleccionadas en el Paso 1.
                   </p>
                 </div>
                 <div class="neon-badge online" id="scheduler-status-badge">
@@ -726,6 +892,6 @@
     </div>
   </div>
 
-  <script src="js/admin.js?v=flyer"></script>
+  <script src="js/admin.js?v=social3"></script>
 </body>
 </html>
