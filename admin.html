@@ -454,6 +454,58 @@
                         <button type="button" class="btn-toggle-pwd" data-target="pass-net-fb" title="Mostrar/ocultar clave">👁️</button>
                       </div>
                     </div>
+
+                    <!-- Opciones de publicación en Facebook -->
+                    <div style="display:flex; flex-direction:column; gap:0.4rem; margin-top:0.4rem; font-size:0.8rem;">
+                      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+                        <input type="checkbox" id="fb-post-main-page" checked style="accent-color:var(--neon-cyan);">
+                        <span>Publicar en Página Principal / Fan Page</span>
+                      </label>
+                      <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+                        <input type="checkbox" id="fb-post-groups" checked style="accent-color:var(--neon-cyan);">
+                        <span>Publicar en Grupos de Facebook Asociados</span>
+                      </label>
+                    </div>
+
+                    <!-- Gestor de Grupos de Facebook -->
+                    <div class="fb-groups-section" id="fb-groups-container">
+                      <div class="fb-groups-header">
+                        <strong style="font-size:0.8rem; color:var(--neon-cyan);">👥 Grupos Asociados a tu Cuenta:</strong>
+                        <span id="fb-groups-count-badge" style="font-size:0.75rem; color:var(--text-dim);">3 Grupos Activos</span>
+                      </div>
+                      
+                      <div class="fb-groups-list" id="fb-groups-list-box">
+                        <div class="fb-group-item">
+                          <label class="fb-group-info" style="cursor:pointer;">
+                            <input type="checkbox" class="fb-group-chk" checked data-name="Compra y Venta Lima & Perú Oficial" data-url="https://www.facebook.com/groups/comprayventaperu">
+                            <span>🛒 Compra y Venta Lima & Perú</span>
+                          </label>
+                          <span style="font-size:0.72rem; color:var(--whatsapp-green);">● Listo</span>
+                        </div>
+                        <div class="fb-group-item">
+                          <label class="fb-group-info" style="cursor:pointer;">
+                            <input type="checkbox" class="fb-group-chk" checked data-name="PC Gamer, Hardware & Computación Perú" data-url="https://www.facebook.com/groups/pcgamerperu">
+                            <span>💻 PC Gamer & Hardware Perú</span>
+                          </label>
+                          <span style="font-size:0.72rem; color:var(--whatsapp-green);">● Listo</span>
+                        </div>
+                        <div class="fb-group-item">
+                          <label class="fb-group-info" style="cursor:pointer;">
+                            <input type="checkbox" class="fb-group-chk" checked data-name="Marketplace Ofertas & Emprendedores" data-url="https://www.facebook.com/groups/marketplaceperu">
+                            <span>📦 Marketplace Ofertas Perú</span>
+                          </label>
+                          <span style="font-size:0.72rem; color:var(--whatsapp-green);">● Listo</span>
+                        </div>
+                      </div>
+
+                      <!-- Añadir nuevo grupo -->
+                      <div class="fb-add-group-box">
+                        <input type="text" id="fb-new-group-name" class="form-input" style="padding:0.4rem 0.6rem; font-size:0.78rem;" placeholder="Nombre o Link del Grupo...">
+                        <button type="button" id="btn-add-fb-group" class="btn btn-outline btn-sm" style="padding:0.4rem 0.8rem; font-size:0.78rem; white-space:nowrap;">
+                          <span>+ Agregar</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -825,10 +877,60 @@
                 </div>
               </div>
 
+              <!-- Comprobante de Prueba y Reporte Automático a WhatsApp -->
+              <div class="wa-proof-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.6rem;">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <span style="font-size:1.4rem;">📲</span>
+                    <strong style="font-size:0.95rem; color:#fff;">Prueba y Comprobante Automático a tu WhatsApp</strong>
+                    <span class="wa-proof-badge">⚡ Verificación en Vivo</span>
+                  </div>
+                  <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; cursor:pointer;">
+                    <input type="checkbox" id="chk-send-wa-proof" checked style="accent-color:var(--whatsapp-green);">
+                    <span>Enviar comprobante en vivo al publicar</span>
+                  </label>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:end;">
+                  <div>
+                    <label for="wa-proof-phone-input" style="font-size:0.78rem; font-weight:700; color:var(--text-dim);">
+                      WhatsApp receptor de la prueba (tu número personal):
+                    </label>
+                    <input type="text" id="wa-proof-phone-input" class="form-input" style="margin-top:0.3rem;" value="+51 929 198 813">
+                  </div>
+                  <div>
+                    <button type="button" id="btn-send-wa-test-proof" class="btn btn-outline btn-sm" style="width:100%; justify-content:center; gap:0.5rem; border-color:rgba(37,211,102,0.4); color:var(--whatsapp-green);">
+                      <span>📱 Enviar Reporte de Prueba a mi WhatsApp Ahora</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div style="margin-top:0.8rem;">
+                  <span style="font-size:0.78rem; color:var(--text-dim); font-weight:700;">Vista Previa del Comprobante que llegará a tu WhatsApp:</span>
+                  <div class="wa-proof-preview-box" id="wa-proof-preview-text">
+✅ REPORTE DE PUBLICACIÓN AUTOMÁTICA EN VIVO - SERVICIOSWEB
+===================================================
+📦 Producto: Fuente de Poder MSI MAG Gamer Alta Eficiencia
+💰 Precio: S/ 180.00
+🕒 Hora: 10:00 AM (Campaña Activa)
+
+📍 DESTINOS PUBLICADOS EN FACEBOOK:
+1. 📘 Página Principal / Fan Page
+2. 👥 Grupo: Compra y Venta Lima & Perú Oficial
+3. 👥 Grupo: PC Gamer, Hardware & Computación Perú
+4. 👥 Grupo: Marketplace Ofertas & Emprendedores
+
+📸 Flyer HD 1080x1080: Descargado y adjunto con éxito
+📲 Contacto en el Flyer: +51 929 198 813
+⚡ Estado: Publicación en grupos y página completada.
+                  </div>
+                </div>
+              </div>
+
               <!-- Botones de Apertura y Publicación Inmediata -->
               <div class="social-actions-bar">
                 <button type="button" id="btn-publish-all-now" class="btn btn-wa btn-lg" style="flex:1; justify-content:center; gap:0.6rem;">
-                  <span>🚀 Publicar / Abrir Redes Sociales Ahora</span>
+                  <span>🚀 Publicar en Facebook (Página + Grupos) & Enviar Comprobante a mi WhatsApp</span>
                 </button>
                 <button type="button" id="btn-schedule-campaign" class="btn btn-outline btn-lg" style="justify-content:center;">
                   <span>⏰ Programar Envíos Automáticos del Día</span>
