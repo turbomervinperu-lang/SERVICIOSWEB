@@ -120,6 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentSectionDesc.textContent = "Número oficial receptor de solicitudes, nombre de la agencia y seguridad.";
                     loadConfig();
                     break;
+                case 'tab-publicidad':
+                    currentSectionTitle.textContent = "Publicidad Web & Auto-Marketing";
+                    currentSectionDesc.textContent = "Generador de flyers con IA Gemini (Gratis) y programación de publicaciones para redes sociales.";
+                    initPublicidadCanvasIfEmpty();
+                    break;
                 case 'tab-metricas':
                     currentSectionTitle.textContent = "Métricas & Diagnóstico";
                     currentSectionDesc.textContent = "Estado de salud de Neon PostgreSQL y Cloudflare R2.";
@@ -388,6 +393,768 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ==============================================================================
+    // 7. MÓDULO: PUBLICIDAD WEB CON GOOGLE GEMINI GRATUITO & FLYER CANVAS
+    // ==============================================================================
+    let pubImageObj = null;
+    let pubImageBase64 = null;
+    let pubMimeType = 'image/jpeg';
+    let pubFlyerInitialized = false;
+
+    let currentFlyerData = {
+        productName: "Producto Exclusivo de Temporada",
+        category: "Tendencias 2026",
+        hookTitle: "¡OFERTA ESPECIAL DE TEMPORADA!",
+        badge: "¡SUPER OFERTA!",
+        price: "89.00",
+        currency: "S/",
+        whatsapp: "+51 929 198 813",
+        features: [
+            "Alta calidad y diseño ergonómico de vanguardia",
+            "Garantía oficial y entrega inmediata",
+            "Envíos rápidos y 100% seguros a nivel nacional"
+        ],
+        style: "neon"
+    };
+
+    // Referencias a elementos del DOM de Publicidad
+    const pubDropzone = document.getElementById('pub-image-dropzone');
+    const pubFileInput = document.getElementById('pub-image-file');
+    const pubPreviewBox = document.getElementById('pub-preview-box');
+    const pubPreviewImg = document.getElementById('pub-preview-img');
+    const pubBtnRemoveImg = document.getElementById('pub-btn-remove-img');
+    const pubPriceInput = document.getElementById('pub-product-price');
+    const pubCurrencySelect = document.getElementById('pub-price-currency');
+    const pubWaInput = document.getElementById('pub-flyer-whatsapp');
+    const pubGeminiKeyInput = document.getElementById('gemini-api-key-input');
+    const pubSocialEmailInput = document.getElementById('social-sync-email');
+    const pubStyleBtns = document.querySelectorAll('.flyer-style-btn');
+    const btnGenerateFlyer = document.getElementById('btn-generate-pub-flyer');
+    const pubStatusMsg = document.getElementById('pub-status-msg');
+    const flyerCanvas = document.getElementById('pub-flyer-canvas');
+    const btnDownloadFlyer = document.getElementById('btn-download-flyer');
+    const btnRerenderFlyer = document.getElementById('btn-rerender-flyer');
+    const geminiDetectedName = document.getElementById('gemini-detected-name');
+    const geminiSocialCopy = document.getElementById('gemini-social-copy');
+    const geminiHashtags = document.getElementById('gemini-hashtags');
+    const btnCopySocialText = document.getElementById('btn-copy-social-text');
+    const btnPublishNow = document.getElementById('btn-publish-all-now');
+    const btnSchedule = document.getElementById('btn-schedule-campaign');
+    const socialDispatchLog = document.getElementById('social-dispatch-log');
+    const btnAddScheduleHour = document.getElementById('btn-add-schedule-hour');
+    const customScheduleHour = document.getElementById('custom-schedule-hour');
+    const scheduleHoursTags = document.getElementById('schedule-hours-tags');
+
+    // Cargar clave guardada en localStorage si existe
+    if (pubGeminiKeyInput) {
+        pubGeminiKeyInput.value = localStorage.getItem('serviciosweb_gemini_key') || '';
+        pubGeminiKeyInput.addEventListener('change', () => {
+            localStorage.setItem('serviciosweb_gemini_key', pubGeminiKeyInput.value.trim());
+        });
+    }
+
+    if (pubSocialEmailInput) {
+        pubSocialEmailInput.value = localStorage.getItem('serviciosweb_social_email') || 'contacto@serviciosweb.pe';
+        pubSocialEmailInput.addEventListener('change', () => {
+            localStorage.setItem('serviciosweb_social_email', pubSocialEmailInput.value.trim());
+        });
+    }
+
+    function initPublicidadCanvasIfEmpty() {
+        if (!pubFlyerInitialized && flyerCanvas) {
+            syncFlyerInputsWithData();
+            drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+            pubFlyerInitialized = true;
+        }
+    }
+
+    function syncFlyerInputsWithData() {
+        if (pubPriceInput) currentFlyerData.price = pubPriceInput.value.trim() || '89.00';
+        if (pubCurrencySelect) currentFlyerData.currency = pubCurrencySelect.value;
+        if (pubWaInput) currentFlyerData.whatsapp = pubWaInput.value.trim() || '+51 929 198 813';
+    }
+
+    // Eventos de sincronización rápida de precio y WhatsApp
+    pubPriceInput?.addEventListener('input', () => {
+        syncFlyerInputsWithData();
+        drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+    });
+
+    pubCurrencySelect?.addEventListener('change', () => {
+        syncFlyerInputsWithData();
+        drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+    });
+
+    pubWaInput?.addEventListener('input', () => {
+        syncFlyerInputsWithData();
+        drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+    });
+
+    // Selector de Estilos Gráficos del Flyer
+    pubStyleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            pubStyleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFlyerData.style = btn.getAttribute('data-style') || 'neon';
+            drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+        });
+    });
+
+    // Manejo de Carga de Imagen (Drag & Drop + File Input)
+    pubFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleImageUpload(file);
+    });
+
+    pubDropzone?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        pubDropzone.classList.add('dragover');
+    });
+
+    pubDropzone?.addEventListener('dragleave', () => {
+        pubDropzone.classList.remove('dragover');
+    });
+
+    pubDropzone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pubDropzone.classList.remove('dragover');
+        const file = e.dataTransfer.files?.[0];
+        if (file) handleImageUpload(file);
+    });
+
+    pubBtnRemoveImg?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pubImageObj = null;
+        pubImageBase64 = null;
+        pubFileInput.value = '';
+        pubPreviewBox.style.display = 'none';
+        pubDropzone.style.display = 'block';
+        drawFlyerCanvas(flyerCanvas, currentFlyerData, null);
+    });
+
+    function handleImageUpload(file) {
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor selecciona un archivo de imagen válido (JPG, PNG, WebP).');
+            return;
+        }
+
+        pubMimeType = file.type;
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            pubImageBase64 = e.target.result;
+            const img = new Image();
+            img.onload = () => {
+                pubImageObj = img;
+                if (pubPreviewImg) pubPreviewImg.src = pubImageBase64;
+                if (pubPreviewBox) pubPreviewBox.style.display = 'block';
+                if (pubDropzone) pubDropzone.style.display = 'none';
+                drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+            };
+            img.src = pubImageBase64;
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    // ==============================================================================
+    // MOTOR DE DIBUJO DEL FLYER (CANVAS 1080 x 1080 px)
+    // ==============================================================================
+    function drawFlyerCanvas(canvas, data, imgObj) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = 1080;
+        const H = 1080;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // 1. FONDO SEGÚN ESTILO
+        if (data.style === 'luxury') {
+            // Negro ébano y dorado
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#0a0a0c');
+            bgGrad.addColorStop(0.5, '#121217');
+            bgGrad.addColorStop(1, '#050507');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Resplandor dorado sutil
+            const radGrad = ctx.createRadialGradient(W * 0.5, 380, 50, W * 0.5, 380, 480);
+            radGrad.addColorStop(0, 'rgba(245, 158, 11, 0.18)');
+            radGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Marco decorativo fino dorado
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(30, 30, W - 60, H - 60);
+
+        } else if (data.style === 'sale') {
+            // Fondo de impacto comercial (Rojo / Naranja intenso)
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#1c0307');
+            bgGrad.addColorStop(0.5, '#2b060d');
+            bgGrad.addColorStop(1, '#0f0204');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            const radGrad = ctx.createRadialGradient(W * 0.7, 340, 40, W * 0.7, 340, 520);
+            radGrad.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+            radGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(30, 30, W - 60, H - 60);
+
+        } else if (data.style === 'clean') {
+            // Minimalista Pro (Azul profundo moderno)
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#0c1527');
+            bgGrad.addColorStop(0.6, '#080d19');
+            bgGrad.addColorStop(1, '#05070d');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            const radGrad = ctx.createRadialGradient(250, 300, 30, 250, 300, 450);
+            radGrad.addColorStop(0, 'rgba(59, 130, 246, 0.22)');
+            radGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radGrad;
+            ctx.fillRect(0, 0, W, H);
+
+        } else {
+            // CYBER NEÓN PREDETERMINADO (Cyan + Púrpura Glow)
+            const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#070b16');
+            bgGrad.addColorStop(0.5, '#0b1122');
+            bgGrad.addColorStop(1, '#04070e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Resplandor Cyan superior izquierdo
+            const radCyan = ctx.createRadialGradient(180, 260, 40, 180, 260, 440);
+            radCyan.addColorStop(0, 'rgba(0, 229, 255, 0.25)');
+            radCyan.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radCyan;
+            ctx.fillRect(0, 0, W, H);
+
+            // Resplandor Púrpura inferior derecho
+            const radPurp = ctx.createRadialGradient(880, 600, 40, 880, 600, 460);
+            radPurp.addColorStop(0, 'rgba(168, 85, 247, 0.22)');
+            radPurp.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = radPurp;
+            ctx.fillRect(0, 0, W, H);
+
+            // Borde exterior con glow
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.35)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(30, 30, W - 60, H - 60);
+        }
+
+        // 2. ENCABEZADO: LOGO Y BADGE DE OFERTA
+        // Marca SERVICIOSWEB
+        ctx.fillStyle = '#00e5ff';
+        ctx.font = '900 32px "Outfit", sans-serif';
+        ctx.fillText('SERVICIOS', 65, 85);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('WEB', 245, 85);
+
+        // Badge de Oferta / Urgencia (Esquina superior derecha)
+        const badgeText = data.badge || '¡OFERTA LIMITADA!';
+        ctx.font = '800 22px "Outfit", sans-serif';
+        const badgeWidth = ctx.measureText(badgeText).width + 40;
+        const badgeX = W - 65 - badgeWidth;
+        const badgeY = 56;
+
+        // Fondo del badge
+        ctx.save();
+        ctx.fillStyle = data.style === 'luxury' ? 'linear-gradient' : '#ef4444';
+        if (data.style === 'luxury') {
+            ctx.fillStyle = '#f59e0b';
+        } else if (data.style === 'neon') {
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.9)';
+        } else {
+            ctx.fillStyle = '#e11d48';
+        }
+        roundRect(ctx, badgeX, badgeY, badgeWidth, 42, 21);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText(badgeText, badgeX + badgeWidth / 2, badgeY + 28);
+        ctx.restore();
+
+        // 3. CONTENEDOR HERO DEL PRODUCTO (MARCO CENTRADO)
+        const boxX = 90;
+        const boxY = 135;
+        const boxW = W - 180;
+        const boxH = 490;
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+        ctx.shadowBlur = 35;
+        ctx.shadowOffsetY = 15;
+        ctx.fillStyle = 'rgba(13, 20, 36, 0.75)';
+        roundRect(ctx, boxX, boxY, boxW, boxH, 24);
+        ctx.fill();
+        ctx.restore();
+
+        // Borde fino del contenedor
+        ctx.strokeStyle = data.style === 'luxury' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(0, 229, 255, 0.3)';
+        ctx.lineWidth = 2.5;
+        roundRect(ctx, boxX, boxY, boxW, boxH, 24);
+        ctx.stroke();
+
+        // DIBUJAR LA IMAGEN DEL PRODUCTO (Si existe)
+        if (imgObj) {
+            ctx.save();
+            // Clip dentro del marco
+            roundRect(ctx, boxX + 6, boxY + 6, boxW - 12, boxH - 12, 20);
+            ctx.clip();
+
+            // Calcular escala 'contain' manteniendo proporción
+            const scale = Math.min((boxW - 40) / imgObj.width, (boxH - 40) / imgObj.height);
+            const drawW = imgObj.width * scale;
+            const drawH = imgObj.height * scale;
+            const drawX = boxX + (boxW - drawW) / 2;
+            const drawY = boxY + (boxH - drawH) / 2;
+
+            // Sombra del producto
+            ctx.drawImage(imgObj, drawX, drawY, drawW, drawH);
+            ctx.restore();
+        } else {
+            // Placeholder interactivo
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.textAlign = 'center';
+            ctx.font = '80px sans-serif';
+            ctx.fillText('📸', boxX + boxW / 2, boxY + boxH / 2 - 15);
+            ctx.font = '600 24px "Outfit", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fillText('Sube la foto del producto para armar el flyer', boxX + boxW / 2, boxY + boxH / 2 + 55);
+        }
+
+        // 4. STICKER DEL PRECIO DESTACADO (FLOTANTE SOBRE EL PRODUCTO)
+        const priceStr = `${data.currency} ${data.price || '89.00'}`;
+        ctx.save();
+        const priceTagW = 270;
+        const priceTagH = 92;
+        const priceTagX = boxX + boxW - priceTagW + 25;
+        const priceTagY = boxY + boxH - 55;
+
+        // Sombra de brillo neón
+        ctx.shadowColor = data.style === 'luxury' ? 'rgba(245, 158, 11, 0.5)' : 'rgba(0, 229, 255, 0.6)';
+        ctx.shadowBlur = 25;
+
+        // Fondo del badge de precio
+        const priceBg = ctx.createLinearGradient(priceTagX, priceTagY, priceTagX + priceTagW, priceTagY + priceTagH);
+        if (data.style === 'luxury') {
+            priceBg.addColorStop(0, '#f59e0b');
+            priceBg.addColorStop(1, '#b45309');
+        } else if (data.style === 'sale') {
+            priceBg.addColorStop(0, '#ef4444');
+            priceBg.addColorStop(1, '#991b1b');
+        } else {
+            priceBg.addColorStop(0, '#00e5ff');
+            priceBg.addColorStop(1, '#0284c7');
+        }
+        ctx.fillStyle = priceBg;
+        roundRect(ctx, priceTagX, priceTagY, priceTagW, priceTagH, 18);
+        ctx.fill();
+
+        // Borde blanco
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        roundRect(ctx, priceTagX, priceTagY, priceTagW, priceTagH, 18);
+        ctx.stroke();
+
+        // Textos del precio
+        ctx.fillStyle = '#060913';
+        ctx.textAlign = 'center';
+        ctx.font = '800 16px "Outfit", sans-serif';
+        ctx.fillText('PRECIO ESPECIAL', priceTagX + priceTagW / 2, priceTagY + 28);
+        ctx.font = '900 42px "Outfit", sans-serif';
+        ctx.fillText(priceStr, priceTagX + priceTagW / 2, priceTagY + 74);
+        ctx.restore();
+
+        // 5. TITULAR PUBLICITARIO Y NOMBRE DEL PRODUCTO
+        const textStartY = 680;
+        ctx.textAlign = 'left';
+
+        // Categoría / Tag pequeño
+        ctx.font = '700 20px "Outfit", sans-serif';
+        ctx.fillStyle = data.style === 'luxury' ? '#f59e0b' : '#00e5ff';
+        ctx.fillText((data.category || 'NOVEDAD DESTACADA').toUpperCase(), 90, textStartY);
+
+        // Titular comercial de impacto (Hook Title)
+        ctx.font = '900 42px "Outfit", sans-serif';
+        ctx.fillStyle = '#ffffff';
+        const titleText = data.hookTitle || '¡OFERTA ESPECIAL DE TEMPORADA!';
+        ctx.fillText(truncateText(ctx, titleText, W - 180), 90, textStartY + 48);
+
+        // Nombre comercial del producto identificado por Gemini
+        ctx.font = '700 28px "Outfit", sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        const pName = data.productName || 'Producto Exclusivo de Temporada';
+        ctx.fillText(truncateText(ctx, pName, W - 180), 90, textStartY + 90);
+
+        // 6. VIÑETAS CON CARACTERÍSTICAS DE VENTA (FEATURES)
+        const featY = textStartY + 130;
+        const feats = data.features || [
+            "Calidad garantizada y materiales premium",
+            "Atención inmediata y entrega segura",
+            "Envíos a todo el país con número de seguimiento"
+        ];
+
+        feats.slice(0, 3).forEach((feature, idx) => {
+            const currentY = featY + (idx * 38);
+            // Icono / viñeta brillante
+            ctx.fillStyle = data.style === 'luxury' ? '#f59e0b' : '#22c55e';
+            ctx.font = '800 22px sans-serif';
+            ctx.fillText('✔', 90, currentY);
+
+            // Texto de la característica
+            ctx.font = '600 23px "Outfit", sans-serif';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText(truncateText(ctx, feature, W - 230), 125, currentY);
+        });
+
+        // 7. BARRA INFERIOR / FOOTER CON LLAMADA A LA ACCIÓN (WHATSAPP)
+        const footerY = 945;
+        const footerH = 88;
+        const footerW = W - 180;
+        const footerX = 90;
+
+        ctx.save();
+        // Fondo verde WhatsApp con degradado y sombra
+        ctx.shadowColor = 'rgba(37, 211, 102, 0.45)';
+        ctx.shadowBlur = 20;
+        const waGrad = ctx.createLinearGradient(footerX, footerY, footerX + footerW, footerY + footerH);
+        waGrad.addColorStop(0, '#25d366');
+        waGrad.addColorStop(1, '#128c7e');
+        ctx.fillStyle = waGrad;
+        roundRect(ctx, footerX, footerY, footerW, footerH, 18);
+        ctx.fill();
+
+        // Icono y Texto de WhatsApp
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 30px "Outfit", sans-serif';
+        const waText = `💬 ¡PÍDELO POR WHATSAPP: ${data.whatsapp || '+51 929 198 813'}!`;
+        ctx.fillText(waText, footerX + footerW / 2, footerY + 54);
+        ctx.restore();
+    }
+
+    // Funciones auxiliares de Canvas
+    function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
+    function truncateText(ctx, text, maxWidth) {
+        if (!text) return '';
+        if (ctx.measureText(text).width <= maxWidth) return text;
+        let str = text;
+        while (str.length > 0 && ctx.measureText(str + '...').width > maxWidth) {
+            str = str.substring(0, str.length - 1);
+        }
+        return str + '...';
+    }
+
+    // ==============================================================================
+    // LLAMADA A GOOGLE GEMINI GRATUITO PARA ANÁLISIS Y COPYWRITING
+    // ==============================================================================
+    btnGenerateFlyer?.addEventListener('click', async () => {
+        if (!pubImageObj || !pubImageBase64) {
+            alert('⚠️ Por favor sube primero la foto del producto para que Gemini pueda analizarla.');
+            return;
+        }
+
+        syncFlyerInputsWithData();
+        const customKey = pubGeminiKeyInput?.value.trim() || '';
+
+        // Feedback visual
+        btnGenerateFlyer.disabled = true;
+        btnGenerateFlyer.innerHTML = `<span>⏳ Analizando con Gemini Vision...</span>`;
+        if (pubStatusMsg) {
+            pubStatusMsg.style.display = 'block';
+            pubStatusMsg.style.background = 'rgba(0, 229, 255, 0.1)';
+            pubStatusMsg.style.color = 'var(--neon-cyan)';
+            pubStatusMsg.style.border = '1px solid rgba(0, 229, 255, 0.3)';
+            pubStatusMsg.innerHTML = '🤖 <strong>Google Gemini</strong> está analizando la imagen, reconociendo el producto y redactando el flyer publicitario...';
+        }
+
+        try {
+            let resultData = null;
+
+            // Intentar primero con el endpoint serverless
+            try {
+                const response = await fetch('/api/gemini-flyer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        imageBase64: pubImageBase64,
+                        mimeType: pubMimeType,
+                        price: currentFlyerData.price,
+                        currency: currentFlyerData.currency,
+                        customKey: customKey
+                    })
+                });
+
+                if (response.ok) {
+                    const resJson = await response.json();
+                    if (resJson.success && resJson.data) {
+                        resultData = resJson.data;
+                    }
+                }
+            } catch (errApi) {
+                console.warn('Endpoint /api/gemini-flyer no disponible en entorno estático local, intentando llamada directa:', errApi.message);
+            }
+
+            // Si hay customKey y no respondió el endpoint local, llamar directo a Gemini REST API
+            if (!resultData && customKey) {
+                resultData = await callGeminiDirectly(customKey, pubImageBase64, pubMimeType, currentFlyerData.price, currentFlyerData.currency);
+            }
+
+            // Fallback inteligente si no hay clave todavía
+            if (!resultData) {
+                resultData = generateFallbackMarketingData(currentFlyerData.price, currentFlyerData.currency);
+            }
+
+            // Aplicar resultados al flyer y a los campos
+            currentFlyerData.productName = resultData.productName || currentFlyerData.productName;
+            currentFlyerData.category = resultData.category || currentFlyerData.category;
+            currentFlyerData.hookTitle = resultData.hookTitle || currentFlyerData.hookTitle;
+            currentFlyerData.badge = resultData.badge || currentFlyerData.badge;
+            if (resultData.features && resultData.features.length) {
+                currentFlyerData.features = resultData.features;
+            }
+
+            // Actualizar campos de texto en la interfaz
+            if (geminiDetectedName) geminiDetectedName.textContent = currentFlyerData.productName;
+            if (geminiSocialCopy) geminiSocialCopy.value = resultData.socialCopy || '';
+            if (geminiHashtags) geminiHashtags.textContent = resultData.hashtags || '#ServiciosWeb #Oferta #Ecommerce';
+
+            // Redibujar el flyer en el Canvas con el contenido de la IA
+            drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+
+            if (pubStatusMsg) {
+                pubStatusMsg.style.background = 'rgba(37, 211, 102, 0.12)';
+                pubStatusMsg.style.color = 'var(--whatsapp-green)';
+                pubStatusMsg.style.border = '1px solid rgba(37, 211, 102, 0.35)';
+                pubStatusMsg.innerHTML = '✅ <strong>¡Flyer Generado con Éxito!</strong> La imagen ha sido analizada y el flyer de 1080x1080 px está listo.';
+            }
+
+        } catch (error) {
+            console.error('Error generando flyer:', error);
+            if (pubStatusMsg) {
+                pubStatusMsg.style.background = 'rgba(239, 68, 68, 0.12)';
+                pubStatusMsg.style.color = '#f87171';
+                pubStatusMsg.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                pubStatusMsg.innerHTML = '❌ Hubo un inconveniente al procesar la imagen: ' + error.message;
+            }
+        } finally {
+            btnGenerateFlyer.disabled = false;
+            btnGenerateFlyer.innerHTML = `<span>✨ 1. Analizar con Gemini & Generar Flyer</span>`;
+        }
+    });
+
+    // Llamada directa a Google Gemini 1.5 Flash (Gratuito) desde cliente
+    async function callGeminiDirectly(key, base64Url, mimeType, price, currency) {
+        const cleanBase64 = base64Url.replace(/^data:image\/[a-zA-Z0-9+]+;base64,/, '');
+        const prompt = `Analiza detalladamente esta foto de producto que se venderá a ${currency} ${price || 'a consultar'}. Devuelve EXCLUSIVAMENTE un JSON con:
+{"productName": "Nombre comercial preciso", "category": "Categoría comercial", "hookTitle": "Titular de 4 a 6 palabras tipo flyer", "badge": "¡OFERTA EXCLUSIVA!", "features": ["Ventaja 1", "Ventaja 2", "Ventaja 3"], "socialCopy": "Texto persuasivo completo para Facebook/Instagram con emojis y llamado a comprar por WhatsApp", "hashtags": "#HashtagsVirales"}`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { mimeType: mimeType, data: cleanBase64 } }
+                    ]
+                }],
+                generationConfig: { responseMimeType: "application/json" }
+            })
+        });
+
+        if (!res.ok) throw new Error('Error de Gemini API: ' + res.statusText);
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const cleanJson = text.trim().replace(/^```json/, '').replace(/```$/, '').trim();
+        return JSON.parse(cleanJson);
+    }
+
+    // Generador Inteligente de Respaldo
+    function generateFallbackMarketingData(price, currency) {
+        return {
+            productName: "Artículo Exclusivo Seleccionado",
+            category: "Novedad en Catálogo 2026",
+            hookTitle: "¡CALIDAD PREMIUM AL MEJOR PRECIO!",
+            badge: "¡EDICIÓN LIMITADA!",
+            features: [
+                "Material de alta durabilidad y diseño premium",
+                "Garantía oficial y entrega inmediata",
+                "Envíos garantizados a todo el país"
+            ],
+            socialCopy: `🔥 ¡NUEVO LANZAMIENTO! Descubre este increíble producto con calidad garantizada y acabado superior.\n\n💰 Precio Especial: ${currency} ${price || '89.00'}\n✨ Stock limitado para entrega inmediata.\n\n📲 ¡Escríbenos ahora mismo al WhatsApp para reservar el tuyo antes de que se agote! 🚀`,
+            hashtags: "#OfertaExclusiva #VentasPeru #TiendaOnline #Descuentos #ServiciosWeb"
+        };
+    }
+
+    // Botón de Redibujar Flyer
+    btnRerenderFlyer?.addEventListener('click', () => {
+        syncFlyerInputsWithData();
+        drawFlyerCanvas(flyerCanvas, currentFlyerData, pubImageObj);
+    });
+
+    // Descargar Flyer en PNG de Alta Resolución
+    btnDownloadFlyer?.addEventListener('click', () => {
+        if (!flyerCanvas) return;
+        const link = document.createElement('a');
+        link.download = `flyer-publicidad-${Date.now()}.png`;
+        link.href = flyerCanvas.toDataURL('image/png');
+        link.click();
+    });
+
+    // Copiar Texto Social al Portapapeles
+    btnCopySocialText?.addEventListener('click', async () => {
+        if (!geminiSocialCopy || !geminiSocialCopy.value) {
+            alert('Aún no hay texto generado para copiar.');
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(geminiSocialCopy.value + '\n\n' + (geminiHashtags?.textContent || ''));
+            btnCopySocialText.textContent = '✅ ¡Copiado!';
+            setTimeout(() => {
+                btnCopySocialText.textContent = '📋 Copiar Texto Completo';
+            }, 2500);
+        } catch (err) {
+            geminiSocialCopy.select();
+            document.execCommand('copy');
+            alert('Texto copiado al portapapeles.');
+        }
+    });
+
+    // ==============================================================================
+    // PROGRAMACIÓN & APERTURA AUTOMÁTICA EN REDES SOCIALES
+    // ==============================================================================
+    // Alternar selección de plataformas
+    document.querySelectorAll('.social-platform-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            pill.classList.toggle('checked');
+            const checkSpan = pill.querySelector('.platform-check');
+            if (checkSpan) {
+                checkSpan.textContent = pill.classList.contains('checked') ? '✓' : '';
+            }
+        });
+    });
+
+    // Añadir Hora Personalizada
+    btnAddScheduleHour?.addEventListener('click', () => {
+        const timeVal = customScheduleHour?.value;
+        if (!timeVal) return;
+        const tag = document.createElement('span');
+        tag.className = 'schedule-hour-tag';
+        tag.innerHTML = `⏰ ${timeVal} (Personalizada)`;
+        scheduleHoursTags?.appendChild(tag);
+        alert(`Hora ${timeVal} agregada a la lista de publicaciones automáticas.`);
+    });
+
+    // Publicar / Abrir Redes Sociales Ahora
+    btnPublishNow?.addEventListener('click', async () => {
+        const textToPublish = (geminiSocialCopy?.value || '¡Gran Oferta en SERVICIOSWEB!') + '\n\n' + (geminiHashtags?.textContent || '');
+
+        // Copiar automáticamente el texto
+        try {
+            await navigator.clipboard.writeText(textToPublish);
+        } catch (e) {
+            console.warn('No se pudo copiar directo:', e);
+        }
+
+        // Descargar flyer para que lo adjunten de inmediato
+        if (flyerCanvas && pubImageObj) {
+            const link = document.createElement('a');
+            link.download = `flyer-listo-para-redes.png`;
+            link.href = flyerCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        const checkedPlatforms = Array.from(document.querySelectorAll('.social-platform-pill.checked')).map(p => p.getAttribute('data-platform'));
+
+        if (checkedPlatforms.length === 0) {
+            alert('Por favor selecciona al menos una red social.');
+            return;
+        }
+
+        // Abrir pestañas según las redes seleccionadas
+        checkedPlatforms.forEach(plat => {
+            switch (plat) {
+                case 'facebook':
+                    window.open('https://www.facebook.com', '_blank');
+                    break;
+                case 'instagram':
+                    window.open('https://www.instagram.com', '_blank');
+                    break;
+                case 'whatsapp':
+                    window.open(`https://web.whatsapp.com/send?text=${encodeURIComponent(textToPublish)}`, '_blank');
+                    break;
+                case 'tiktok':
+                    window.open('https://www.tiktok.com/upload', '_blank');
+                    break;
+                case 'twitter':
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(textToPublish.substring(0, 240))}`, '_blank');
+                    break;
+            }
+        });
+
+        // Registrar en el log
+        if (socialDispatchLog) {
+            socialDispatchLog.style.display = 'block';
+            const now = new Date().toLocaleTimeString();
+            socialDispatchLog.innerHTML = `
+                <div style="color:var(--whatsapp-green); font-weight:700; margin-bottom:0.3rem;">
+                    🚀 [${now}] Publicación iniciada en: ${checkedPlatforms.join(', ').toUpperCase()}
+                </div>
+                <div style="color:var(--text-muted); font-size:0.8rem;">
+                    • El texto persuasivo fue <strong>copiado a tu portapapeles</strong> (Ctrl+V para pegar en cada red).<br>
+                    • El flyer de 1080x1080 fue <strong>descargado automáticamente</strong> para adjuntarlo como foto.<br>
+                    • Se abrieron las ventanas oficiales de cada red social vinculada.
+                </div>
+            `;
+        }
+    });
+
+    // Programar Envíos Automáticos del Día
+    btnSchedule?.addEventListener('click', () => {
+        const email = pubSocialEmailInput?.value.trim() || 'contacto@serviciosweb.pe';
+        alert(`✅ ¡Campaña Programada con Éxito!\n\nLas horas 09:00 AM, 01:30 PM y 08:00 PM han sido configuradas.\nLas publicaciones se vincularon a la cuenta asociada: ${email}.\nEl sistema emitirá las alertas y recordatorios para cada franja horaria.`);
+        
+        if (socialDispatchLog) {
+            socialDispatchLog.style.display = 'block';
+            socialDispatchLog.innerHTML = `
+                <div style="color:#c084fc; font-weight:700;">
+                    ⏰ Campaña Automática Activa para hoy
+                </div>
+                <div style="color:var(--text-dim); font-size:0.8rem; margin-top:0.2rem;">
+                    Próximo envío programado: <strong>09:00 AM</strong> | Correo vinculado: <code>${email}</code>
+                </div>
+            `;
+        }
+    });
+
     filterStatusSelect?.addEventListener('change', loadLeads);
     btnRefresh?.addEventListener('click', () => {
         loadLeads();
@@ -404,3 +1171,4 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 });
+

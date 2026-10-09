@@ -6,8 +6,8 @@
   <title>Panel de Administración | SERVICIOSWEB</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='%2300e5ff'/><text x='50' y='65' font-size='50' font-weight='900' text-anchor='middle' fill='%23060913'>SW</text></svg>">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/styles.css?v=flyer">
+  <link rel="stylesheet" href="css/admin.css?v=flyer">
 </head>
 <body class="admin-body">
 
@@ -17,7 +17,7 @@
       <div class="pin-header">
         <div class="brand-icon" style="margin: 0 auto 1.2rem auto; width:52px; height:52px; font-size:1.4rem;">SW</div>
         <h2>Acceso Administrativo</h2>
-        <p>Ingresa el PIN de seguridad para gestionar los clientes y precios de SERVICIOSWEB.</p>
+        <p>Ingresa el PIN de seguridad (predeterminado: <strong>1234</strong>) para acceder al panel y a Publicidad Web.</p>
       </div>
       <form id="pin-form">
         <div class="form-group">
@@ -64,6 +64,12 @@
           <span class="nav-item-icon">💰</span>
           <span class="nav-item-text">Modificar Precios</span>
           <span class="sidebar-pill-badge">En Vivo</span>
+        </button>
+
+        <button type="button" class="sidebar-nav-item" data-tab="tab-publicidad" id="nav-item-publicidad">
+          <span class="nav-item-icon">📢</span>
+          <span class="nav-item-text">Publicidad Web</span>
+          <span class="sidebar-pill-badge" style="background:rgba(168,85,247,0.2); color:#c084fc; border:1px solid rgba(168,85,247,0.4);">IA Gemini</span>
         </button>
 
         <div class="sidebar-section-title" style="margin-top:1.5rem;">SISTEMA & CONTACTO</div>
@@ -380,6 +386,299 @@
         </section>
 
         <!-- ====================================================================
+             TAB: PUBLICIDAD WEB CON GEMINI IA & FLYER GENERATOR
+             ==================================================================== -->
+        <section class="admin-tab-pane" id="tab-publicidad">
+          <div class="pub-container">
+            
+            <!-- Banner Explicativo Superior -->
+            <div class="glass-card" style="padding:1.8rem 2.2rem; border-color:rgba(168,85,247,0.35); background:linear-gradient(135deg, rgba(168,85,247,0.08), rgba(0,229,255,0.05));">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.2rem;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem;">
+                    <span style="font-size:1.8rem;">📢</span>
+                    <h2 style="font-size:1.5rem; margin:0;">Publicidad Web Automática con IA</h2>
+                    <span class="sidebar-pill-badge" style="background:rgba(168,85,247,0.25); color:#d8b4fe; border:1px solid #c084fc;">Gemini 1.5/2.0 Flash Gratuito</span>
+                  </div>
+                  <p style="font-size:0.9rem; color:var(--text-muted); margin:0; max-width:850px;">
+                    El cliente solo sube la foto de su producto e indica el precio. La inteligencia artificial de <strong>Google Gemini</strong> identifica el producto, redacta el texto persuasivo tipo flyer y nuestro motor gráfico genera un <strong>Flyer de Alta Resolución (1080x1080)</strong> listo para publicar y programar en redes sociales.
+                  </p>
+                </div>
+                <div style="display:flex; gap:0.8rem; align-items:center;">
+                  <span class="hero-pill-dot" style="background:#22c55e;"></span>
+                  <span style="font-size:0.82rem; color:#86efac; font-weight:700;">Google AI Studio: 1,500 peticiones/día sin costo</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Barra de Configuración de API y Cuentas -->
+            <div class="glass-card" style="padding:1.4rem 1.8rem;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                <div>
+                  <label for="gemini-api-key-input" style="font-size:0.85rem; font-weight:700; color:var(--text-main); display:flex; justify-content:space-between;">
+                    <span>🔑 Clave de Google Gemini (Gratis):</span>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--neon-cyan); font-weight:600; font-size:0.78rem; text-decoration:none;">
+                      Obtener clave gratis en Google AI Studio &rarr;
+                    </a>
+                  </label>
+                  <input type="password" id="gemini-api-key-input" class="form-input" style="margin-top:0.4rem;" placeholder="Pega aquí tu clave AIzaSy... (o déjalo en blanco para modo demo asistido)">
+                  <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
+                    Se almacena de forma segura en tu navegador y permite análisis visuales ilimitados dentro del tier gratuito.
+                  </span>
+                </div>
+
+                <div>
+                  <label for="social-sync-email" style="font-size:0.85rem; font-weight:700; color:var(--text-main);">
+                    ✉️ Correo Comercial para Redes Sociales:
+                  </label>
+                  <input type="email" id="social-sync-email" class="form-input" style="margin-top:0.4rem;" placeholder="ejemplo: marketing@serviciosweb.pe" value="contacto@serviciosweb.pe">
+                  <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem; display:block;">
+                    Este correo se asocia a las cuentas de Facebook Ads, Instagram y WhatsApp Business para la sincronización.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid Principal: Subida / Parámetros vs Visor de Flyer & Copy -->
+            <div class="pub-grid">
+              
+              <!-- COLUMNA 1: FORMULARIO DE PRODUCTO -->
+              <div class="glass-card" style="padding:1.8rem;">
+                <h3 style="font-size:1.2rem; margin-bottom:0.3rem; display:flex; align-items:center; gap:0.5rem;">
+                  <span>📸 Paso 1: Subir Producto & Precio</span>
+                </h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.4rem;">
+                  No necesitas escribir nada técnico. La IA de visión detectará automáticamente qué es.
+                </p>
+
+                <!-- Dropzone de Imagen -->
+                <div class="pub-dropzone" id="pub-image-dropzone">
+                  <input type="file" id="pub-image-file" accept="image/*">
+                  <div class="pub-drop-icon">📦</div>
+                  <div style="font-weight:700; color:#fff; font-size:1rem; margin-bottom:0.3rem;">
+                    Arrastra aquí la foto del producto
+                  </div>
+                  <div style="font-size:0.82rem; color:var(--text-dim);">
+                    o haz clic para explorar tus archivos (JPG, PNG, WebP)
+                  </div>
+                </div>
+
+                <!-- Preview de la foto cargada -->
+                <div class="pub-preview-box" id="pub-preview-box">
+                  <img id="pub-preview-img" alt="Vista previa del producto">
+                  <button type="button" class="pub-btn-remove-img" id="pub-btn-remove-img" title="Eliminar foto">&times;</button>
+                </div>
+
+                <!-- Parámetros: Precio y Moneda -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.4rem;">
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="pub-product-price" style="font-size:0.85rem; font-weight:700;">💰 Precio del Producto:</label>
+                    <input type="text" id="pub-product-price" class="form-input" placeholder="Ej: 89.00" value="89.00" required>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0;">
+                    <label for="pub-price-currency" style="font-size:0.85rem; font-weight:700;">Moneda:</label>
+                    <select id="pub-price-currency" class="form-select">
+                      <option value="S/">Soles (S/)</option>
+                      <option value="$">Dólares ($)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- WhatsApp de Contacto en el Flyer -->
+                <div class="form-group" style="margin-top:1.2rem; margin-bottom:1.4rem;">
+                  <label for="pub-flyer-whatsapp" style="font-size:0.85rem; font-weight:700;">
+                    📲 WhatsApp para Pedidos en el Flyer:
+                  </label>
+                  <input type="text" id="pub-flyer-whatsapp" class="form-input" value="+51 929 198 813">
+                </div>
+
+                <!-- Selector de Estilo Gráfico del Flyer -->
+                <div style="margin-bottom:1.6rem;">
+                  <label style="font-size:0.85rem; font-weight:700; margin-bottom:0.6rem; display:block;">
+                    🎨 Estilo Visual del Flyer:
+                  </label>
+                  <div class="flyer-styles-selector">
+                    <button type="button" class="flyer-style-btn active" data-style="neon">Cyber Neón</button>
+                    <button type="button" class="flyer-style-btn" data-style="luxury">Luxury Gold</button>
+                    <button type="button" class="flyer-style-btn" data-style="sale">Oferta Explosiva</button>
+                    <button type="button" class="flyer-style-btn" data-style="clean">Minimal Pro</button>
+                  </div>
+                </div>
+
+                <!-- Botón de Ejecución -->
+                <button type="button" id="btn-generate-pub-flyer" class="btn btn-primary btn-lg" style="width:100%; justify-content:center; gap:0.7rem; font-size:1rem; box-shadow:0 0 25px rgba(0,229,255,0.3);">
+                  <span>✨ 1. Analizar con Gemini & Generar Flyer</span>
+                </button>
+
+                <!-- Estado de Procesamiento -->
+                <div id="pub-status-msg" style="display:none; margin-top:1rem; padding:0.8rem 1rem; border-radius:var(--radius-sm); font-size:0.85rem; text-align:center;"></div>
+              </div>
+
+              <!-- COLUMNA 2: FLYER TERMINADO (CANVAS) & COPY DE REDES -->
+              <div class="pub-right-col" style="display:flex; flex-direction:column; gap:1.5rem;">
+                
+                <!-- Visor del Canvas del Flyer 1080x1080 -->
+                <div class="flyer-preview-wrapper">
+                  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span class="hero-pill-dot" style="background:#a855f7;"></span>
+                      <strong style="font-size:0.95rem; color:#fff;">Flyer Generado (1080 &times; 1080 px)</strong>
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--text-dim);">Formato Oficial Redes</span>
+                  </div>
+
+                  <!-- Canvas donde se renderiza el flyer -->
+                  <div class="flyer-canvas-container" id="flyer-canvas-box">
+                    <canvas id="pub-flyer-canvas" width="1080" height="1080"></canvas>
+                  </div>
+
+                  <!-- Acciones de Descarga -->
+                  <div style="display:flex; gap:0.8rem; width:100%;">
+                    <button type="button" id="btn-download-flyer" class="btn btn-primary" style="flex:1; justify-content:center;">
+                      <span>⬇️ Descargar Flyer HD (PNG)</span>
+                    </button>
+                    <button type="button" id="btn-rerender-flyer" class="btn btn-outline" style="min-width:130px; justify-content:center;">
+                      <span>🔄 Redibujar</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Redacción de Gemini / Copywriting para Redes -->
+                <div class="gemini-copy-card">
+                  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.8rem;">
+                    <div class="gemini-tag-badge">
+                      <span>🤖 Copywriting Generado por Gemini IA</span>
+                    </div>
+                    <button type="button" id="btn-copy-social-text" class="btn btn-outline btn-sm">
+                      <span>📋 Copiar Texto Completo</span>
+                    </button>
+                  </div>
+
+                  <div>
+                    <strong style="font-size:0.85rem; color:var(--text-dim);">Producto Reconocido:</strong>
+                    <div id="gemini-detected-name" style="font-size:1.05rem; font-weight:800; color:var(--neon-cyan); margin:0.2rem 0 0.6rem 0;">
+                      Sube una imagen para que Gemini analice el producto
+                    </div>
+                  </div>
+
+                  <label for="gemini-social-copy" style="font-size:0.82rem; color:var(--text-dim); font-weight:700;">
+                    Texto Persuasivo Listo para Publicar:
+                  </label>
+                  <textarea id="gemini-social-copy" class="copy-textarea" readonly placeholder="Aquí aparecerá la descripción persuasiva con emojis, precio y llamado a la acción al WhatsApp lista para publicar en tus redes sociales..."></textarea>
+
+                  <div style="margin-top:0.8rem;">
+                    <span style="font-size:0.8rem; color:var(--text-dim); font-weight:700;">Hashtags sugeridos:</span>
+                    <div id="gemini-hashtags" style="font-size:0.85rem; color:#818cf8; margin-top:0.2rem; font-weight:600;">
+                      #ServiciosWeb #Ofertas #Ecommerce #Lima
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ====================================================================
+                 PASO 3: PROGRAMACIÓN DE HORAS & APERTURA EN REDES SOCIALES
+                 ==================================================================== -->
+            <div class="social-scheduler-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+                <div>
+                  <h3 style="font-size:1.25rem; margin:0 0 0.3rem 0; display:flex; align-items:center; gap:0.6rem;">
+                    <span>🚀 Paso 2: Programación de Horas & Apertura de Redes</span>
+                  </h3>
+                  <p style="font-size:0.88rem; color:var(--text-muted); margin:0;">
+                    Programa las horas de mayor impacto del día o abre directamente las redes sociales asociadas a tu correo.
+                  </p>
+                </div>
+                <div class="neon-badge online" id="scheduler-status-badge">
+                  <span class="hero-pill-dot" style="width:6px; height:6px;"></span>
+                  <span>Programador Activo</span>
+                </div>
+              </div>
+
+              <!-- Selector de Redes Sociales -->
+              <div style="margin-top:1.2rem;">
+                <label style="font-size:0.85rem; font-weight:700; color:var(--text-main);">
+                  Selecciona las redes sociales donde se publicará:
+                </label>
+                <div class="social-platforms-grid">
+                  <div class="social-platform-pill checked" data-platform="facebook" id="pill-fb">
+                    <span style="font-size:1.2rem;">📘</span>
+                    <span>Facebook</span>
+                    <span class="platform-check">✓</span>
+                  </div>
+                  <div class="social-platform-pill checked" data-platform="instagram" id="pill-ig">
+                    <span style="font-size:1.2rem;">📸</span>
+                    <span>Instagram</span>
+                    <span class="platform-check">✓</span>
+                  </div>
+                  <div class="social-platform-pill checked" data-platform="whatsapp" id="pill-wa">
+                    <span style="font-size:1.2rem;">💬</span>
+                    <span>WhatsApp</span>
+                    <span class="platform-check">✓</span>
+                  </div>
+                  <div class="social-platform-pill" data-platform="tiktok" id="pill-tt">
+                    <span style="font-size:1.2rem;">🎵</span>
+                    <span>TikTok</span>
+                    <span class="platform-check"></span>
+                  </div>
+                  <div class="social-platform-pill" data-platform="twitter" id="pill-tw">
+                    <span style="font-size:1.2rem;">✖️</span>
+                    <span>X (Twitter)</span>
+                    <span class="platform-check"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Horarios de Publicación -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.4rem;">
+                <div>
+                  <label style="font-size:0.85rem; font-weight:700; color:var(--text-main); display:block; margin-bottom:0.4rem;">
+                    ⏰ Horas pico del día configuradas:
+                  </label>
+                  <div class="schedule-hours-group" id="schedule-hours-tags">
+                    <span class="schedule-hour-tag">🌅 09:00 AM (Mañana)</span>
+                    <span class="schedule-hour-tag">☀️ 01:30 PM (Almuerzo)</span>
+                    <span class="schedule-hour-tag">🌙 08:00 PM (Hora Prime)</span>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-dim); margin-top:0.4rem; display:block;">
+                    Estas son las 3 horas de mayor interacción y ventas en Perú y Latinoamérica.
+                  </span>
+                </div>
+
+                <div>
+                  <label for="custom-schedule-hour" style="font-size:0.85rem; font-weight:700; color:var(--text-main); display:block; margin-bottom:0.4rem;">
+                    ➕ Añadir otra hora específica:
+                  </label>
+                  <div style="display:flex; gap:0.6rem;">
+                    <input type="time" id="custom-schedule-hour" class="form-input" value="16:00" style="max-width:180px;">
+                    <button type="button" id="btn-add-schedule-hour" class="btn btn-outline btn-sm">
+                      <span>Agregar Hora</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de Apertura y Publicación Inmediata -->
+              <div class="social-actions-bar">
+                <button type="button" id="btn-publish-all-now" class="btn btn-wa btn-lg" style="flex:1; justify-content:center; gap:0.6rem;">
+                  <span>🚀 Publicar / Abrir Redes Sociales Ahora</span>
+                </button>
+                <button type="button" id="btn-schedule-campaign" class="btn btn-outline btn-lg" style="justify-content:center;">
+                  <span>⏰ Programar Envíos Automáticos del Día</span>
+                </button>
+              </div>
+
+              <!-- Registro de Disparos / Cola de Envíos -->
+              <div id="social-dispatch-log" style="margin-top:1.2rem; display:none; padding:1rem; background:rgba(0,0,0,0.4); border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-size:0.85rem;">
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ====================================================================
              TAB 4: MÉTRICAS & DIAGNÓSTICO
              ==================================================================== -->
         <section class="admin-tab-pane" id="tab-metricas">
@@ -427,6 +726,6 @@
     </div>
   </div>
 
-  <script src="js/admin.js"></script>
+  <script src="js/admin.js?v=flyer"></script>
 </body>
 </html>

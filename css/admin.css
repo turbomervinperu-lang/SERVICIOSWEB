@@ -400,3 +400,273 @@
     padding: 1.2rem;
   }
 }
+
+/* ==============================================================================
+   MÓDULO: PUBLICIDAD WEB CON GEMINI IA & FLYER CANVAS
+   ============================================================================== */
+.pub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .pub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dropzone de Imagen de Producto */
+.pub-dropzone {
+  border: 2px dashed rgba(0, 229, 255, 0.35);
+  border-radius: var(--radius-md);
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+  background: rgba(9, 14, 28, 0.6);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.pub-dropzone:hover, .pub-dropzone.dragover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 229, 255, 0.05);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.15);
+}
+
+.pub-dropzone input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pub-drop-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.8rem;
+  display: inline-block;
+  animation: floatBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.pub-preview-box {
+  position: relative;
+  width: 100%;
+  max-height: 220px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 1rem;
+  background: #000;
+  border: 1px solid var(--border-subtle);
+  display: none;
+}
+
+.pub-preview-box img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+}
+
+.pub-btn-remove-img {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: var(--transition);
+}
+
+.pub-btn-remove-img:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Visor del Canvas del Flyer */
+.flyer-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  background: rgba(9, 14, 28, 0.9);
+  padding: 1.8rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.flyer-canvas-container {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: #080d1a;
+  position: relative;
+}
+
+.flyer-canvas-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Badges y Controles de Plantilla */
+.flyer-styles-selector {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.flyer-style-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-dim);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.flyer-style-btn.active, .flyer-style-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+/* Redacción de Gemini / Copy */
+.gemini-copy-card {
+  background: rgba(13, 20, 38, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.gemini-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(0, 229, 255, 0.25));
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #fff;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.copy-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: rgba(6, 9, 19, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem;
+  color: var(--text-main);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+  margin-top: 0.8rem;
+  font-family: inherit;
+}
+
+/* Panel de Automatización de Redes */
+.social-scheduler-card {
+  background: rgba(10, 15, 30, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.8rem;
+}
+
+.social-platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.8rem;
+  margin: 1.2rem 0;
+}
+
+.social-platform-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.social-platform-pill:hover, .social-platform-pill.checked {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--neon-cyan);
+  color: #fff;
+}
+
+.social-platform-pill.checked .platform-check {
+  color: var(--neon-cyan);
+}
+
+.schedule-hours-group {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.schedule-hour-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  color: var(--whatsapp-green);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.social-actions-bar {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
